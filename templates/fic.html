@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h1>{{chapitre["fic_titre"]}}</h1>
+    <hr/>
+    <p class="center">Par : 
+        {#La liste des auteurs de la fic#}
+        {% for i in chapitre["fic_auteur"] %}
+        <a href="{{i[0]}}" class="auteur">{{i[1]}}</a>
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+    </p>
+    <p class="center">Genre :
+        {#La liste des genres#}
+        {% for i in chapitre["fic_genres"] %}
+        {{i}}
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+    </p>
+    <p class="center">Status : {{chapitre["fic_status"]}}</p>
+    <p class="center">Note :
+        {#Note#}
+        {% for a in chapitre["fic_note"]%}
+        {% if a %}
+        <img src="/static/img/noel.gif">
+        {% else %}
+        <img src="/static/img/noel-gris.gif">
+        {% endif %}
+        {% endfor %}
+    </p>
+
+    <hr/>
+    <h1>Chapitre {{chapitre["chapitre"]}}</h1>
+    <h1>{{chapitre["chapitre_titre"]}}</h1>
+    <p class="chapitre_info">Publié le {{chapitre["chapitre_date"]}} par <a href="{{chapitre['chapitre_auteur_lien']}}">{{chapitre['chapitre_auteur']}}</a></p>
+    <div class="fic_content">
+        {{chapitre["chapitre_content"]|safe}}
+    </div>
+
+    {#Navigation chapitre précedent et chapitre suivant#}
+    <div class="inner_nav">
+        {#Fic précedent#}
+        {% if chapitre["chapitre"] != 1 %}
+        <a href="{{chapitre['chapitre']-1}}"><img src="/static/img/chevron_left.svg" style="filter: invert(70%)"></a>
+        {% else %}
+        <a><img src="/static/img/chevron_left.svg" style="filter: invert(40%)"></a>
+        {% endif %}
+
+        {#Fic suivante#}
+        {% if chapitre["chapitre"] < chapitre["nbChapitres"] %}
+        <a href="{{chapitre['chapitre']+1}}"><img src="/static/img/chevron_right.svg" style="filter: invert(70%)"></a>
+        {% else %}
+        <a><img src="/static/img/chevron_right.svg" style="filter: invert(40%)"></a>
+        {% endif %}
+    </div>
+
+    <hr/>
+    <h1>Commentaires</h1>
+    <div class="commentaire">
+        {% for i in commentaires %}
+        <div class="msg">
+            <img src="{{i['avatar']}}"/>
+            <div class="msg-content">
+                <a class="pseudo" href="{{i['lien']}}">{{i["pseudo"]}}</a>
+                <p class="date">{{i["date"]}}</p>
+                <p class="msg-content-content">{{i["content"]}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <p>Vous devez être connecté pour poster un commentaire</p> {#TODO:Normalement c'est si bah pas connecté.#}
+{% endblock %}

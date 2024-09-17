@@ -1,0 +1,5 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h1>Tous les messages du minichat</h1>
+    <div class="commentaire" id="minichat_messages"">{{messages|safe}}</div>
+{% endblock %}

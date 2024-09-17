@@ -1,0 +1,93 @@
+.fic_nav_liste {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    margin-top: 5%;
+    border: 1px solid #d8d8d8;
+    padding-left: 15px;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    gap: 15px;
+}
+
+.fic_nav {
+    margin-top: 15px;
+}
+
+.fic_nav input {
+    overflow-x: visible;
+    overflow-y: visible;
+    background-color: transparent;
+    height: 48.0px;
+    font-size: 16px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -ms-box-sizing: content-box;
+    outline: invert none medium;
+    border-width: medium medium 1px;
+    border-style: none none solid;
+    padding: 0px;
+    border-color: white white rgb(158, 158, 158);
+}
+
+.fic_nav h1 {
+    text-align: center;
+    font-size: 1.64rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 2.28rem;
+    font-weight: 400;
+    color: rgba(0,0,0,0.87);
+}
+
+.center {
+    text-align: center;
+}
+
+hr {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.auteur {
+    color: black;
+    font-weight: bold;
+}
+
+.chapitre_info {
+    text-align: left;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.chapitre_info a {
+    color: black;
+    font-weight: bold;
+
+}
+
+.fic_content {
+    padding: 24px;
+    border-radius: 2px;
+    font-size: 15px;
+    color: rgba(0,0,0,0.87);
+    line-height: 1.5;
+    background-color: #e0e0e0;
+    text-align: justify;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.12),0 1px 5px 0 rgba(0,0,0,0.2)
+}
+
+.inner_nav {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}

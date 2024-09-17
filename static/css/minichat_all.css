@@ -1,0 +1,11 @@
+.content h1 {
+    font-weight: normal;
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 1em;
+}
+
+.content {
+    margin-left: 15%;
+    margin-right: 15%;
+}

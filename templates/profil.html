@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h1>{{info["pseudo"]}}</h1>
+    
+    <div class="selecteur">
+        <h2 id="selecteur_profil" onclick="affProfil()">Profil</h2>
+        <h2 id="selecteur_chapitres" onclick="affChapitres()">Chapitres</h2>
+    </div>
+    {#TODO: mettre un sélecteur pour savoir si on veux voir le profil ou les chapitres#}
+    <div id="onglet_profil" class="profil">
+        {#Ici on range les info de base#}
+        <div class="elements_base"">
+            <img src="{{info['avatar']}}" alt=""/>
+            <table>
+                <tbody>
+                    <tr><th>Membre depuis : </th> <th>{{info["inscription"]}} jours {% if info["inscription_annees"]%}({{info["inscription_annees"]}} années){%endif%}</th></tr>
+                    <tr><th>Dernier passage : </th> <th>{{info["derniere_conn"]}}</th></tr>
+                    <tr><th>Chapitres postés : </th> <th>{{info["nbChapitres"]}}</th></tr>
+                </tbody>
+            </table>
+        </div>
+        {#Ici les comptes externes#}
+        {% if info["comptes_externes"] %}
+        <div class="comptes_externes">
+        <h2>Comptes externes</h2>
+        <table>
+            {% for i in info["comptes_externes"] %}
+            <tr>
+                <th><img src="{{i['icon']}}" alt=""></th>
+                <th>{{i["site"]}}</th>
+                <th>{{i["pseudo"]}}</th>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+
+        {% endif %}
+        {#Ici la description#}
+        <p>{{info["description"]|safe}}</p>
+
+    </div>
+    <div id="onglet_chapitres" class="chapitre"> {#Ici la liste des chapitres#} 
+        {% for i in chapitres %}
+        <p><a href="{{i['lien']}}">{{i["fic"]}} - Chapitre {{i["num"]}} {% if i["titre_chapitre"] %} : {{i["titre_chapitre"]}}{% endif %}</a></p>
+        {% endfor %}
+    </div>
+    
+    <script>
+        function affProfil() {
+            document.getElementById("onglet_profil").style.display = 'block';
+            document.getElementById("onglet_chapitres").style.display = 'none';
+
+            document.getElementById("selecteur_profil").classList.add("selecteur_cur")
+            document.getElementById("selecteur_chapitres").classList.remove("selecteur_cur")
+            
+        }
+        function affChapitres() {
+            document.getElementById("onglet_profil").style.display = 'none';
+            document.getElementById("onglet_chapitres").style.display = 'block';
+
+            document.getElementById("selecteur_profil").classList.remove("selecteur_cur")
+            document.getElementById("selecteur_chapitres").classList.add("selecteur_cur")
+        }
+
+        affProfil()
+    </script>
+{% endblock %}

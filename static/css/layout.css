@@ -1,0 +1,168 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif
+}
+
+header {
+    background-image: url("../img/banniere.png");
+
+}
+
+main {
+    display: flex;
+    flex: 1;
+}
+
+.sidebar {
+    background-color: #f4f4f4;
+    padding: 10px;
+    width: 200px;
+}
+
+/* Style pour le contenu central */
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: 0.5%;
+}
+/* Style pour le footer */
+footer {
+    text-align: center;
+    color:  white;
+    background-color: rgb(66, 66, 66);
+    font-weight: normal;
+    font-size: 14.5px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    margin-right: 5px;
+    margin-left: 5px;
+    gap: 10px;
+}
+
+.button {
+    box-shadow: rgba(0, 0, 0, 0.136719) 0px 2px 2px 0px, rgba(0, 0, 0, 0.117188) 0px 3px 1px -2px, rgba(0, 0, 0, 0.199219) 0px 1px 5px 0px;
+    border-radius: 2px;
+    /*border-top-left-radius: 2px 2px;
+    border-top-right-radius: 2px 2px;
+    border-bottom-right-radius: 2px 2px;
+    border-bottom-left-radius: 2px 2px;*/
+    /*height: 36px;*/
+    line-height: 36px;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    letter-spacing: 0.5px;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    vertical-align: middle;
+    z-index: 1;
+    margin-bottom: 10px;
+    background-color: rgb(66, 66, 66);
+    outline: invert none 0px;
+    border-width: medium;
+    border-style: none;
+    padding: 0px 16px;
+    border-color: white;
+}
+
+.button:hover {
+    background-color: rgb(80, 80, 80);
+}
+
+.recherche {
+    text-align: left;
+    overflow-x: visible;
+    overflow-y: visible;
+    background-color: transparent;
+    height: 48.0px;
+    font-size: 16px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -ms-box-sizing: content-box;
+    outline: invert none medium;
+    border-width: medium medium 1px;
+    border-style: none none solid;
+    padding: 0px;
+    border-color: white white rgb(158, 158, 158);
+}
+
+.sidebar h2 {
+    margin-top: 10px;
+    font-size: larger;
+}
+
+.sidebar form .button {
+    margin-top: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #039be5;
+}
+
+
+.commentaire { /*C'est là ça pour la seule raison que les commentaires et les trucs du minichat c'est le même style*/
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+    border: 1px solid rgb(224, 224, 224);
+    text-align: left;
+}
+
+.commentaire .msg {
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.commentaire .msg img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.commentaire .msg .msg-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.commentaire .msg .pseudo {
+    font-weight: bold;
+    color: black;
+}
+
+.commentaire .msg .date {
+    font-weight: 200;
+    font-size: 0.8em;
+}
+
+.commentaire .msg .msg-content-content {
+    padding: 0px;
+}

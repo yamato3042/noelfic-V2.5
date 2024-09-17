@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h1>{{titre}}</h1>
+
+    {% if modeGenre %}
+    <div class="genres">
+        <a href="/classement/genre/action/1">Action</a>
+        <a href="/classement/genre/bd/1">BD</a>
+        <a href="/classement/genre/concours/1">Concours</a>
+        <a href="/classement/genre/fantastique/1">Fantastique</a>
+        <a href="/classement/genre/horreur/1">Horreur</a>
+        <a href="/classement/genre/moins_de_15_ans/1">Moins de 15 ans</a>
+        <a href="/classement/genre/nawak/1">Nawak</a>
+        <a href="/classement/genre/no-fake/1">No-Fake</a>
+        <a href="/classement/genre/polar/1">Polar</a>
+        <a href="/classement/genre/realiste/1">Réaliste</a>
+        <a href="/classement/genre/sayks/1">Sayks</a>
+        <a href="/classement/genre/science-fiction/1">Science-Fiction</a>
+        <a href="/classement/genre/sentimental/1">Sentimental</a>
+        <a href="/classement/genre/inconnu/1">Inconnu</a>
+
+    </div>
+    {% endif %}
+
+    <div class="pages">
+        
+        {#Le chevron gauche#}
+        {% if curPage != 1 %}
+
+            {%if recherche %}
+            {#ICI on fait la différence de lien entre les classements et la recherche#}
+            {% set lien = "?search=" ~ recherche ~ "&page=" ~ (curPage-1)%}
+            {% else %}
+            {% set lien = curPage-1 %}
+            {% endif %}
+
+        <a href="{{lien}}"><img src="/static/img/chevron_left.svg" style="filter: invert(70%)"></a>
+        {% else %}
+        <a><img src="/static/img/chevron_left.svg" style="filter: invert(40%)"></a>
+        {% endif %}
+
+        {#La liste des pages pour la navigation#}
+        {% for i in liste_pages %}
+            {%if recherche %}
+            {% set lien = "?search=" ~ recherche ~ "&page=" ~ i[0]%}
+            {% else %}
+            {% set lien = i[0] %}
+            
+            {% endif %}
+            {%if i[1] == "deb" %}
+            <a href="{{lien}}">{{i[0]}}</a>
+            <span>⋯</span>
+            {% elif i[1] == "cur" %}
+            <a class="cur" href="{{lien}}">{{i[0]}}</a>
+            {% elif i[1] == "fin" %}
+            <span>⋯</span>
+            <a href="{{lien}}">{{i[0]}}</a>
+            {% else %}
+            <a href="{{lien}}">{{i[0]}}</a>
+            {% endif %}
+        {% endfor %}
+
+        {#Le chevron droit#}
+        {% if maxPage != 1 %}
+
+            {%if recherche %}
+            {#ICI on fait la différence de lien entre les classements et la recherche#}
+            {% set lien = "?search=" ~ recherche ~ "&page=" ~ (curPage+1)%}
+            {% else %}
+            {% set lien = curPage+1 %}
+            {% endif %}
+
+        <a href="{{lien}}"><img src="/static/img/chevron_right.svg" style="filter: invert(70%)"></a>
+        {% else %}
+        <a><img src="/static/img/chevron_right.svg" style="filter: invert(40%)"></a>
+        {% endif %}
+
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Note</th>
+                <th>Collaborative</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in fics %}
+            <tr>
+                <td><a href="{{i['fic_lien']}}">{{i["titre"]}}</a></td>
+                <td><a href="{{i['auteur_lien']}}">{{i["auteur"]}}</a></td>
+                <td>{{i["date"]}}</td>
+                <td>{{i["status"]}}</td>
+                <td>
+                    {#Note#}
+                    {% for a in i["note"]%}
+                    {% if a %}
+                    <img src="/static/img/noel.gif">
+                    {% else %}
+                    <img src="/static/img/noel-gris.gif">
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{i["collaboratif"]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

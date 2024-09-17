@@ -1,0 +1,44 @@
+from flask import render_template
+import util.bdd
+import util.general
+from flask import abort
+import psycopg2
+import util.classements
+import util.genre
+from flask import request
+
+def recherche():
+    search = request.args.get("search", None)
+    page = 1
+    if(request.args.get("page", None) != None):
+        if request.args.get("page").isdigit():
+            page = int(request.args.get("page"))
+
+    titre = f"Recherche pour : {search} - Page {page}"
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+
+    pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics WHERE titre ILIKE %s", (f"%{search}%",))
+    if pages_raw == "err":
+        conn.close()
+        abort(404)
+    nbPages = pages_raw["nbPages"]
+    offset = pages_raw["offset"]
+
+
+    
+    #On chope la liste des fics par rapport au nom de l'offset
+    cursor.execute("""SELECT fics.id, fics.titre, users.pseudo, fics.creation,fics.status, fics.collaboratif, fics.note FROM fics
+                    LEFT JOIN users ON users.id = fics.auteur
+                    WHERE titre ILIKE %s
+                    ORDER BY fics.titre
+                    LIMIT 20
+                    OFFSET %s""", (f"%{search}%", offset,))
+    fics_raw = cursor.fetchall()
+    
+    fics = util.classements.gen_fics(fics_raw)
+
+    liste_pages = util.classements.gen_liste_pages(page, nbPages)
+
+    conn.close()
+    return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search)

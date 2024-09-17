@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h2><img src="/static/img/noel.gif" alt=":noel:"> Bienvenue <img src="/static/img/noel.gif" alt=":noel:"></h2>
+    <hr/>
+    <p>Bienvenue sur NoelFic.fr. Ce site a pour vocation de regrouper toutes les histoires (et pas uniquement les fictions) des auteurs prolifiques des forums de jeuxvideo.com.</p>
+    <p>Le fonctionnement du site est simple : un auteur crée un compte, puis une histoire, et poste ses chapitres.</p>
+    <p>Évidemment, nous nous réservons le droit de bannir quiconque outrepasse ses libertés, et d'effacer partie ou totalité du contenu qu'il aurait apporté au site.</p>
+    <p>Ceci étant dit, un grand merci à tous les auteurs pour leur participation.</p>
+                
+    <br/>
+    <h2>Derniers chapitres ajoutés</h2>
+    <hr/>
+    <table class="dernchaps">
+        {#derniers chapitres#}
+        <tbody>
+            {%for chapitre in chapitres %}
+                <tr>
+                    <td><a href="{{chapitre['lien']}}">{{chapitre["titre"]}}</a></td>
+                    <td class="num">Chapitre {{chapitre["num"]}}</td>
+                    <td>{{chapitre["date"]}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <h2>La penséedeo du jour</h2>
+    <hr/>
+    {#TODO: La penséedeo#}
+    <div class="penseedeo">
+        <p>[{{penseedeo["date"]}}] par <a href="{{penseedeo['auteur_lien']}}">{{penseedeo["auteur"]}}</a> - <a href="{{penseedeo['lien']}}">Toutes les penséedéo</a></p>
+        <div class="content">
+            {{penseedeo["content"]|safe}}
+        </div>
+    </div>
+    <h2>Minichat</h2>
+    <hr/>
+    <div id="minichat">
+        <div class="commentaire" id="minichat_messages"">{{minichat_messages|safe}}</div>
+        {% if account %}
+        {#On devrait pouvoir poster, etc#}
+        {% else %}
+        <p>Vous devez être connecté pour participer au chat.<br/></p>
+        {% endif %}
+        <a onclick="refreshChat()" class="button">rafraîchir</a>
+        <a href="/minichat" class="button">Accéder à tous les messages</a>
+
+    </div> 
+    <script>
+        async function refreshChat() {
+            let content = await fetch("/actions/action_get_chat_messages")
+            document.getElementById("minichat_messages").innerHTML = await content.text()
+        }
+    </script>
+{% endblock %}

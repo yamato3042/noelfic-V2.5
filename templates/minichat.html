@@ -1,0 +1,11 @@
+{% for i in msg %}
+<div class="msg">
+    <img src="{{i['avatar']}}"/>
+    <div class="msg-content">
+        <a class="pseudo" href="{{i['lien']}}">{{i["pseudo"]}}</a>
+        <p class="date">{{i["date"]}}</p>
+        <p class="msg-content-content">{{i["content"]}}</p>
+    </div>
+</div>
+
+{% endfor %}

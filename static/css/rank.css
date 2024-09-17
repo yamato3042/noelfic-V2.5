@@ -1,0 +1,61 @@
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+h1 {
+    font-size: 2.28rem;
+    line-height: 110%;
+    margin: 1.52rem 0 .912rem 0;
+    font-weight: 400;
+    color: rgba(0,0,0,0.87);
+    text-align: center;
+}
+.pages {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    font-size: 1em;
+    font-weight: 400;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+
+.pages a {
+    color: #444;
+    padding: 0.2em;
+}
+
+.pages .cur {
+    color: white;
+    background-color: #ee6e73;
+    border-radius: 5px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+table {
+    border-collapse: collapse;
+}
+table tr {
+    border-bottom: 1px solid rgb(219, 219, 219);
+}
+
+table th {
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: bold;
+}
+
+table td {
+    padding: 15px 10px;
+    text-align: left;
+}
+
+.genres {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 15px;
+}

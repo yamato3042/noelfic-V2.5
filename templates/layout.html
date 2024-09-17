@@ -1,0 +1,61 @@
+<head>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="/static/css/layout.css" />
+    {#TODO: en gros ici faudrait faire un css dynamique #}
+    {% if customCSS %}
+    <link rel="stylesheet" href="/static/css/{{customCSS}}" />
+    {% endif %}
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    <title>
+        {% if titre %}
+        Noelfic | {{titre}}
+        {% else %}
+        Noelfic
+        {% endif %}
+    </title>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png"/>
+</head>
+
+<body>
+    <header>
+        <img src="/static/img/baniere_texte.png" alt="<h1>Noelfic</h1>">
+    </header>
+
+    <!-- la navigation de base-->
+    <main>
+        <div class="sidebar">
+            <a href="/" class="button">Accueil</a>
+            <a href="/charte" class="button">Charte</a>
+            <a href="https://jvflux.fr/Noelfic" class="button">Historique</a>
+            {#TODO: mettre le truc des comptes ici#}
+            {{ajout_sidebar|safe}}
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+        
+        <!--La recherche-->
+        <div class="sidebar">
+            <form action="/recherche" method="get">
+                <p><input type="text" name="search" placeholder="Rechercher..." class="recherche"/></p>
+                <p><input type="submit" value="Rechercher" class="button"/></p>
+            </form>
+            <h2>Fics</h2>
+            <a href="/random" class="button">Au hasard</a>
+            <h2>Classement</h2>
+            <a href="/classement/genre/action/1" class="button">Par genre</a>
+            <a href="/classement/date/1" class="button">Par date</a>
+            <a href="/classement/note/1" class="button">Par note</a>
+            <a href="/classement/popularite/1" class="button">Par popularité</a>
+            <a href="/classement/toutes/1" class="button">Toutes les fics</a>
+        </div>
+    </main>
+    <footer>
+        <p>NoelFic.fr - 2008-2024</p>
+        <p><a href="/contact">Contact</a></p>
+    </footer>
+</body>
