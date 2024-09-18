@@ -166,3 +166,10 @@ a {
 .commentaire .msg .msg-content-content {
     padding: 0px;
 }
+
+/*Les balises de formatage*/
+c {text-align: center;}
+i {font-style: italic;}
+r {text-align: right;}
+u {text-decoration: underline;}
+b {font-weight: bold;}

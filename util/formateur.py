@@ -3,10 +3,11 @@
 #et aussi en mettant les liens youtube dans des iframe
 import bleach
 import re
-
-def clean_text(text):
+import util.emots
+def clean_text(text, balises):
     # Nettoyer le texte pour éviter les failles XSS
-    allowed_tags = ['a', 'b', 'i', 'em', 'strong', 'p', 'br', 'img', 'iframe', 'c']
+    allowed_tags = ['a', 'em', 'p', 'br', 'img',]
+    allowed_tags.extend(balises)
     allowed_attrs = {
         '*': ['href', 'src', 'alt', 'width', 'height', 'frameborder', 'allowfullscreen'],
         'a': ['href', 'title'],
@@ -14,53 +15,94 @@ def clean_text(text):
     }
     return bleach.clean(text, tags=allowed_tags, attributes=allowed_attrs)
 
-def convert_links(text):
-    # Convertir les liens en balises <a>
-    pattern = re.compile(r'(https?://\S+)')
-    return pattern.sub(r'<a href="\1">\1</a>', text)
+def convert_img_tags(texte):
+    # Expression régulière pour trouver les balises [img]
+    pattern = r'\[img\](.*?)\[/img\]'
 
-def convert_emoticons(text):
+    # Fonction de remplacement
+    def remplacer_balise(match):
+        url = match.group(1)
+        print("url : ", url)
+        return f'<img src="{url}"/>'
+
+    # Remplacer les balises [img] par les balises <img>
+    texte_converti = re.sub(pattern, remplacer_balise, texte)
+
+    return texte_converti
+
+def convert_links(texte):
+    # Expression régulière pour trouver les liens qui ne sont pas dans des balises iframe ou img
+    pattern = r'(?<!src=")(?<!href=")(?<!<a href=")(?<!<iframe src=")(http[s]?://\S+)'
+
+    # Fonction de remplacement
+    def remplacer_lien(match):
+        url = match.group(0)
+        print(url)
+        return f'<a href="{url}">{url}</a>'
+
+    # Remplacer les liens restants par des balises <a>
+    texte_converti = re.sub(pattern, remplacer_lien, texte)
+
+    return texte_converti
+
+def convert_emoticons(text): #TODO: à refaire
     # Convertir les émoticônes en images ou icônes
-    emoticons = {
-        ':smile:': '<img src="smile.png" alt="smile">',
-        ':sad:': '<img src="sad.png" alt="sad">',
-        # Ajoutez d'autres émoticônes ici
-    }
-    for emoticon, replacement in emoticons.items():
-        text = text.replace(emoticon, replacement)
+    emots_dic = util.emots.emotdic()
+    for i in emots_dic:
+        text = text.replace(i, f'<img src="/static/emots/{emots_dic[i]}.gif" alt="{i}"/>')
+    
     return text
 
 def convert_youtube_links(text):
-    # Convertir les liens YouTube en iframes
-    pattern = re.compile(r'(https?://www\.youtube\.com/watch\?v=([a-zA-Z0-9_-]+))')
-    return pattern.sub(r'<iframe width="560" height="315" src="https://www.youtube.com/embed/\2" frameborder="0" allowfullscreen></iframe>', text)
+    # Si le texte est une liste, on le joint en une seule chaîne de caractères
+    if isinstance(text, list):
+        text = " ".join(text)
+    
+    # Expression régulière pour capturer les liens YouTube
+    youtube_regex = r'(https?://(?:www\.)?youtube\.com/watch\?v=([a-zA-Z0-9_-]+))'
+    
+    # Fonction qui remplace un lien YouTube par l'iframe correspondante
+    def replace_link_with_iframe(match):
+        video_id = match.group(2)  # Récupérer l'ID de la vidéo
+        return f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allowfullscreen></iframe>'
+    
+    # Remplacer tous les liens par leur iframe
+    result_text = re.sub(youtube_regex, replace_link_with_iframe, text)
+    
+    return result_text
 
-def convert_custom_tags(text):
+def convert_custom_tags(text, balises): #TODO: update le CSS
     # Convertir les balises [i], [/i], [c], [/c], [b], [/b] en balises HTML
-    text = text.replace("[i]", "<i>")
-    text = text.replace("[/i]", "</i>")
-    text = text.replace("[c]", "<c>")
-    text = text.replace("[/c]", "</c>")
-    text = text.replace("[b]", "<b>")
-    text = text.replace("[/b]", "</b>")
+    
+    for i in balises:
+        text = text.replace(f"[{i}]", f"<{i}>")
+        text = text.replace(f"[/{i}]", f"</{i}>")
     return text
 
 def formater(text : str) -> str:
-    #Les sauts de lignes
-    texte_lignes_sautées = text.replace("\n", "<br/>")
     
-    converted_custom_tags_result = convert_custom_tags(texte_lignes_sautées)
+    
+    balises = ["c","i","r","u","b"]
+    text = convert_custom_tags(text, balises)
     
     # Nettoyer le texte
-    clean_text_result = clean_text(converted_custom_tags_result)
-
-    # Convertir les liens
-    converted_links_result = convert_links(clean_text_result)
-
-    # Convertir les émoticônes
-    converted_emoticons_result = convert_emoticons(converted_links_result)
+    text = clean_text(text, balises)
 
     # Convertir les liens YouTube
-    final_result = convert_youtube_links(converted_emoticons_result)
+    text = convert_youtube_links(text)
+    
+    #Convertir les images [img][/img]
+    text = convert_img_tags(text)
+    
+    # Convertir les liens
+    text = convert_links(text)
+    
+    # Convertir les émoticônes
+    text = convert_emoticons(text)
+    
+    #Les sauts de lignes
+    text = text.replace("\n", "<br/>")
 
-    return final_result
+    
+
+    return text
