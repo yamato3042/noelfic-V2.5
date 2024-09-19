@@ -1,0 +1,1 @@
+#Ce fichier vas contenir la page et la requête post permettant de s'inscrire sur le site

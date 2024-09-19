@@ -1,0 +1,1 @@
+#Ce fichier vas regarder le cookie, etc et génerer les tokens temporaires pour le système de compte de base sur l'ensemble du site.
