@@ -2,6 +2,7 @@ from flask import render_template
 import psycopg2
 import util.general
 import util.bdd
+import util.formateur
 def render_chat(cursor: psycopg2.extensions.cursor, limit = 20):
     cursor.execute("""select date, content, pp, pseudo from chat_messages 
                     LEFT JOIN users on chat_messages.auteur = users.id
@@ -14,7 +15,7 @@ def render_chat(cursor: psycopg2.extensions.cursor, limit = 20):
     for i in val:
         cur = {}
         cur["date"] = util.general.convDate(i[0])
-        cur["content"] = i[1]
+        cur["content"] = util.formateur.formater(i[1])
         cur["avatar"] = util.general.getAvatar(i[3], i[2])
         cur["pseudo"] = i[3]
 
