@@ -1,10 +1,21 @@
 <div class="fic_nav">
     <h1>Chapitres</h1>
     <p>Aller au chapitre : </p>
-    <input type="text" id="fic_nav_input" placeholder="...">
+    <input type="text" id="fic_nav_input" placeholder="..." onkeypress="handleChapterKey(event)">
     <div class="fic_nav_liste">
         {% for i in listeChapitres %}
         <a href="{{i[0]}}">Chapitre {{i[0]}}</a>
         {% endfor %}
     </div>
+
+    <script>
+        function handleChapterKey(event) {
+            if (event.keyCode == 13) {
+                let val = document.getElementById("fic_nav_input").value
+                if(parseInt(val) != NaN) {
+                    location.href = val
+                }
+            }
+        }
+    </script>
 </div>
