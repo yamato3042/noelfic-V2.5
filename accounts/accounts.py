@@ -2,6 +2,12 @@
 import psycopg2
 import util.bdd
 from flask import request
+import util.general
+from werkzeug.security import generate_password_hash
+import hashlib
+import secrets
+
+PASSWORD_SALT = "45Scnr7V_NOELFIC_Fa5Mt35q"
 class Session:
     def __init__(self, cursor : psycopg2.extensions.cursor = None, tempToken = None):
         self.cursor : psycopg2.extensions.cursor = cursor
@@ -34,6 +40,43 @@ class Session:
     
     
     
-def CreateUser(pseudo: string, email : string, password : string):
+def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
-    pass
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    
+    # on vérifie que le pseudo n'existe pas déjà
+    cursor.execute("SELECT id FROM users WHERE pseudo ILIKE %s", (pseudo,))
+    ps = list(cursor.fetchall())
+    cursor.execute("SELECT id FROM users WHERE pseudo ILIKE %s", (util.general.getUserLink(pseudo),))
+    ps.extend(list(cursor.fetchall()))
+    
+    if len(ps) > 0:
+        util.bdd.releaseConnexion(conn)
+        return "Ce pseudonyme existe déjà"
+    
+    #On vérifie que l'email n'existe pas déjà
+    cursor.execute("SELECT id FROM users WHERE mail ILIKE %s", (email,))
+    if len(cursor.fetchall()) > 0:
+        util.bdd.releaseConnexion(conn)
+        return "L'adresse email est déjà utilisée"
+    
+    #On crypte le mot de passe
+    mdp = generate_password_hash(pseudo + PASSWORD_SALT)
+    
+    #On génère le hash de validation
+    hashValidation = hashlib.sha256(secrets.token_urlsafe(128).encode()).hexdigest()
+    
+    #On ajoute l'utilisateur dans la BDD
+    cursor.execute("""INSERT INTO users (pseudo, mdp, mail, description, comptes_autres_sites, inscription, validee, hash_validation)
+                        VALUES (%s,%s,%s, '', '[]', NOW(), false, %s)
+                        RETURNING id""",
+                        (pseudo, mdp, email, hashValidation,))
+    id = cursor.fetchall()[0][0]
+    conn.commit()
+    
+    
+    #TODO: Envoie du mail
+    
+    util.bdd.releaseConnexion(conn)
+    return None

@@ -1,0 +1,45 @@
+/*Ce fichier CSS sert pour les pages de connexion, d'inscription, etc*/
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding-bottom: 3em;
+}
+
+.content form h1 {
+    text-align: center;
+    margin-bottom: 2em;
+    color: rgba(0,0,0,0.87);
+}
+.content form table {
+    line-height: 3em;
+}
+
+.content form input {
+    margin-left: 1em;
+    background-color: transparent;
+    height: 48.0px;
+    font-size: 16px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -ms-box-sizing: content-box;
+    outline: invert none medium;
+    border-width: medium medium 1px;
+    border-style: none none solid;
+    padding: 0px;
+    border-color: white white rgb(158, 158, 158);
+}
+
+.content form .button {
+    background-color: green;
+    margin-left: 3em;
+    margin-right: 3em;
+}

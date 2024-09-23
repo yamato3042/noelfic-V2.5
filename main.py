@@ -35,7 +35,7 @@ app.add_url_rule("/minichat", view_func=minichat.page_minichat)
 def page_charte():
     return render_template("charte.html", customCSS="charte.css")
 
-app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription)
+app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription, methods=['GET', 'POST'])
 
 @app.errorhandler(404)
 def error_404(e):

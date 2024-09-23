@@ -1,24 +1,29 @@
 {% extends "layout.html" %}
     {% block content %}
-
     {#TODO: le formulaire #}
     <form action="" method="post">
-        <div class="form-example">
-          <label for="pseudo">Pseudo : </label>
-          <input type="text" name="pseudo" id="pseudo" required />
-        </div>
-        <div class="form-example">
-          <label for="email">Email : </label>
-          <input type="email" name="email" id="email" required />
-        </div>
-        <div class="form-example">
-            <label for="password">Mot de passe : </label>
-            <input type="password" name="password" id="password" required />
-          </div>
-        <div class="form-example">
-          <input type="submit" value="Subscribe!" />
-        </div>
-      </form>
+      <h1>Inscription</h1>
+      <table>
+        <tr>
+          <td><label for="pseudo">Pseudo : </label></td>
+          <td><input type="text" name="pseudo" id="pseudo" required /></td>
+        </tr>
+
+        <tr>
+          <td><label for="email">Email : </label></td>
+          <td><input type="email" name="email" id="email" required /></td>
+        </tr>
+
+        <tr>
+          <td><label for="password">Mot de passe : </label></td>
+          <td><input type="password" name="password" id="password" required /></td>
+        </tr>
+      </table>
+      <input class="button" type="submit" value="Inscription" />
+    </form>
+      {% if err %}
+      <p style="color: red;"">{{err}}</p>
+      {% endif%}
       
 
 {% endblock %}
