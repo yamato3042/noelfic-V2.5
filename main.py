@@ -11,6 +11,7 @@ import profil
 import minichat
 
 import accounts.inscription
+import accounts.connexion
 
 app.add_url_rule("/", view_func=index.index)
 app.add_url_rule("/actions/action_get_chat_messages", view_func=minichat.action_get_chat_messages)
@@ -37,6 +38,7 @@ def page_charte():
 
 app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription, methods=['GET', 'POST'])
 
+app.add_url_rule("/comptes/connexion", view_func=accounts.connexion.page_connexion, methods=['GET', 'POST'])
 @app.errorhandler(404)
 def error_404(e):
     return render_template("404.html", titre="404")
