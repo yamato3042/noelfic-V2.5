@@ -10,6 +10,8 @@ import random_fic
 import profil
 import minichat
 
+import accounts.inscription
+
 app.add_url_rule("/", view_func=index.index)
 app.add_url_rule("/actions/action_get_chat_messages", view_func=minichat.action_get_chat_messages)
 
@@ -32,6 +34,8 @@ app.add_url_rule("/minichat", view_func=minichat.page_minichat)
 @app.route("/charte")
 def page_charte():
     return render_template("charte.html", customCSS="charte.css")
+
+app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription)
 
 @app.errorhandler(404)
 def error_404(e):
