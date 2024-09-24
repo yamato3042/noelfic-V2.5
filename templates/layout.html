@@ -29,7 +29,30 @@
             <a href="/" class="button">Accueil</a>
             <a href="/charte" class="button">Charte</a>
             <a href="https://jvflux.fr/Noelfic" class="button">Historique</a>
-            {#TODO: mettre le truc des comptes ici#}
+            {#Le truc des comptes#}
+            {% if session.logged == True %}
+            <div class="account_badge">
+                <img src="{{session.pp_photo}}" class="account_badge_pp">
+                <div class="account_badge_content">
+                    <div class="account_badge_actions">
+                        <a href="{{session.profil_lien}}"><img src="/static/img/profil.svg"></a> {#Profil#}
+                        <a href="/comptes/logout?token={{session.temp_token}}"><img src="/static/img/logout.svg"></a> {#Deconnexion#}
+                    </div>
+                    <h2>{{session.pseudo}}</h2>
+
+                </div>
+                {#Le javascript qui définit le token temporaire#}
+                <script>
+                    var temp_token = "{{session.temp_token}}";
+                </script>
+            </div>
+            
+            {% else %}
+            <a href="/comptes/connexion" class="button">Connexion</a>
+            <a href="/comptes/inscription" class="button">Inscription</a>
+            {% endif %}
+
+
             {{ajout_sidebar|safe}}
         </div>
 

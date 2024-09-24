@@ -173,3 +173,42 @@ i {font-style: italic;}
 r {text-align: right;}
 u {text-decoration: underline;}
 b {font-weight: bold;}
+
+
+/*Le badge de l'utilisateur*/
+
+.account_badge {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /*padding: 0.3em;*/
+    border: 1px solid rgba(0,0,0,0.87);;
+    border-radius: 5px;
+    gap: 1em;
+}
+
+.account_badge_content {
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+}
+
+.account_badge_pp {
+    width: 5em;
+}
+
+.account_badge_actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    justify-content: center;
+}
+
+.account_badge_actions img {
+    filter: invert(80%)
+}
+
+.account_badge h2 {
+    font-weight: 400;
+    color: rgba(0,0,0,0.87);
+    text-align: center;
+}
