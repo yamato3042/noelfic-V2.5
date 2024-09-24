@@ -3,6 +3,8 @@ import util.bdd
 import util.general
 import util.classements
 import util.formateur
+import accounts.accounts
+
 def fic(fic_, chapitre_):
     #On commence par obtenir le numéro de la fic
     fic_dic = fic_.split("-")
@@ -21,6 +23,7 @@ def fic(fic_, chapitre_):
 
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
+    session = accounts.accounts.Session(conn)
 
     #On chope la liste des chapitres de la fic
     cursor.execute("SELECT COUNT(*) FROM chapitres WHERE fic = %s", (fic,))
@@ -96,4 +99,4 @@ def fic(fic_, chapitre_):
 
 
     titre = f"{chapitre_dic["fic_titre"]} page {chapitre_dic["chapitre"]}"
-    return render_template("fic.html", titre=titre, customCSS="fic.css", ajout_sidebar=render_template("fic_nav.html", listeChapitres=listChapitres), chapitre=chapitre_dic, commentaires=commentaires)
+    return render_template("fic.html", titre=titre, customCSS="fic.css", ajout_sidebar=render_template("fic_nav.html", listeChapitres=listChapitres), chapitre=chapitre_dic, commentaires=commentaires, session=session)

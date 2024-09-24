@@ -77,4 +77,7 @@ def page_inscription():
             err = "Merci de remplir tous les champs"
         print(request.form)
     
-    return render_template("accounts/inscription.html", err=err, customCSS="accounts.css")
+    conn = util.bdd.getConnexion()
+    session = accounts.accounts.Session(conn)
+    util.bdd.releaseConnexion(conn)
+    return render_template("accounts/inscription.html", err=err, customCSS="accounts.css", session=session)

@@ -6,6 +6,7 @@ import psycopg2
 import util.classements
 import util.genre
 from flask import request
+import accounts.accounts
 
 def recherche():
     search = request.args.get("search", None)
@@ -17,6 +18,7 @@ def recherche():
     titre = f"Recherche pour : {search} - Page {page}"
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
+    session = accounts.accounts.Session(conn)
 
     pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics WHERE titre ILIKE %s", (f"%{search}%",))
     if pages_raw == "err":
@@ -41,4 +43,4 @@ def recherche():
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
     conn.close()
-    return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search)
+    return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search, session=session)

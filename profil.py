@@ -4,11 +4,13 @@ import util.general
 import util.classements
 import datetime
 from dateutil.relativedelta import relativedelta
+import accounts.accounts
 
 def profil(profil):
     #On commence par obtenir le numéro de la fic
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
+    session = accounts.accounts.Session(conn)
 
     #On chope la liste des chapitres de la fic
     cursor.execute("""SELECT id,pseudo,description,comptes_autres_sites,inscription,derniere_conn,pp 
@@ -32,7 +34,7 @@ def profil(profil):
     if(diffdate_années > 1):
         info["inscription_annees"] = diffdate_années
 
-    #TODO: Compte autres sites #TODO: Récuperer les icônes des sites
+    #Comptes autres sites
     comptes_externes_raw = info_raw[0][3]
     if(len(comptes_externes_raw)) > 0:
         comptes_externes = []
@@ -66,4 +68,4 @@ def profil(profil):
 
 
     conn.close()
-    return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres)
+    return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres, session=session)
