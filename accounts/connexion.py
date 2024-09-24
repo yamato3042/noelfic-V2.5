@@ -52,7 +52,6 @@ def page_connexion():
                 err = "Mot de passe invalide"
             #TODO: le captcha
             if ok:
-                #On crée le compte
                 err = connexionUser(pseudo, password)
                 
                 if not isinstance(err, str):

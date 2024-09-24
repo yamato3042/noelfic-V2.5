@@ -70,6 +70,6 @@ def genTempToken(cursor : psycopg2.extensions.cursor, user):
         if len(cursor.fetchall()) == 0:
             break;
     
-    cursor.execute("INSERT INTO users_token VALUES (%s,%s,NOW())", (user, clée))
+    cursor.execute("INSERT INTO users_shorts_tokens VALUES (%s,%s,NOW())", (user, clée))
     
     return clée
