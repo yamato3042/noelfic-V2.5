@@ -43,6 +43,7 @@ def fic(fic_, chapitre_):
     
     #On traite le chapitre
     chapitre_dic = {
+        "fic_id" : fic,
         "fic_titre" : chapitre_raw[0][0], 
         "fic_status" : util.general.getStatus(chapitre_raw[0][1]),
         "fic_lien" : chapitre_raw[0][2],
@@ -67,9 +68,16 @@ def fic(fic_, chapitre_):
             util.general.getUserLink(i[0]), #Pour le lien
             i[0] #Juste le pseudo
             ])
-
-
-    #TODO: mettre les paramètres dans les requêtes
+        
+    #On récupère la note
+    if session.logged:
+        #On essaie de récuperer la note
+        cursor.execute("SELECT note FROM note WHERE auteur = %s AND fic = %s", (session.id, fic))
+        note_raw = cursor.fetchall()
+        if len(note_raw) == 1:
+            chapitre_dic["user_note"] = note_raw[0][0]
+        else:
+            chapitre_dic["user_note"] = 0
     
     #On récupère la liste des genres
     cursor.execute("SELECT tag FROM tags WHERE fic = %s", (fic,))
@@ -79,7 +87,7 @@ def fic(fic_, chapitre_):
         chapitre_dic["fic_genres"].append(util.genre.getGenre(i[0]))
 
 
-    #TODO: On récupère les commentaires
+    #On récupère les commentaires
     cursor.execute("""SELECT creation, content, pp, pseudo FROM comments 
                     LEFT JOIN users on comments.auteur = users.id
                     WHERE comments.chapitre = %s AND comments.deleted = false

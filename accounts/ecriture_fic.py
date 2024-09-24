@@ -1,1 +1,0 @@
-#Ce code contient la page et les requêtes AJAX pour écrire une fic sur le site

@@ -26,7 +26,55 @@
         <img src="/static/img/noel-gris.gif">
         {% endif %}
         {% endfor %}
+
     </p>
+    {% if session.logged %}
+    <p class="center">
+        Votre note :
+        {% for i in range(5) %}
+        <img src="/static/img/noel-gris.gif" id="custom-note-{{i}}" onclick="send_custom_note('{{i+1}}')" onmousemove="update_custom_note('{{i+1}}')" onmouseleave="update_custom_note(custom_note)">
+        {% endfor %}
+    </p>
+
+    <script>
+        var custom_note = '{{chapitre["user_note"]}}'
+        function update_custom_note(note) {
+            for (let i = 0; i < 5; i++) {
+                let element = document.getElementById("custom-note-" + i);
+                if(note > (i)) {
+                    //actif
+                    element.src = "/static/img/noel.gif"
+                }
+                else {
+                    //grisé
+                    element.src = "/static/img/noel-gris.gif"
+                }
+            }
+            
+        }
+
+        function send_custom_note(note) {
+            
+            //Requête ajax
+            console.log("Envoie de la note : " + note);
+            custom_note = note
+
+            const formData = new FormData();
+            formData.append("token", temp_token);
+            formData.append("note", note);
+            formData.append("fic", "{{chapitre['fic_id']}}")
+
+
+            const response = fetch("/comptes/changenote", {
+                method: "POST",
+                body: formData,
+              });
+
+        }
+
+        update_custom_note(custom_note)
+    </script>
+    {% endif %}
 
     <hr/>
     <h1>Chapitre {{chapitre["chapitre"]}}</h1>
