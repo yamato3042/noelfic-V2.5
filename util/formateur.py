@@ -71,7 +71,7 @@ def convert_youtube_links(text):
     
     return result_text
 
-def convert_custom_tags(text, balises): #TODO: update le CSS
+def convert_custom_tags(text, balises):
     # Convertir les balises [i], [/i], [c], [/c], [b], [/b] en balises HTML
     
     for i in balises:
@@ -106,3 +106,55 @@ def formater(text : str) -> str:
     
 
     return text
+
+
+def replace_html_tags(html_content, opening_tag, closing_tag, new_opening_tag, new_closing_tag):
+    # Échappez les caractères spéciaux dans les balises pour les utiliser dans l'expression régulière
+    opening_tag_escaped = re.escape(opening_tag)
+    closing_tag_escaped = re.escape(closing_tag)
+
+    # Utilisez une expression régulière pour trouver les balises spécifiées
+    pattern = re.compile(f'{opening_tag_escaped}(.*?){closing_tag_escaped}', re.DOTALL)
+
+    # Remplacez les balises par les nouvelles balises
+    replaced_content = pattern.sub(rf'{new_opening_tag}\1{new_closing_tag}', html_content)
+
+    return replaced_content
+
+def replace_img_tags(html_content):
+    # Utilisez une expression régulière pour trouver les balises <img> avec l'attribut src
+    pattern = re.compile(r'<img\s+src="([^"]+)"\s*>', re.IGNORECASE)
+
+    # Remplacez les balises <img> par [img]...[/img]
+    replaced_content = pattern.sub(r'[img]\1[/img]', html_content)
+
+    return replaced_content
+
+def convert_to_custom_tags(text):
+    # Convertir les balises [i], [/i], [c], [/c], [b], [/b] en balises HTML
+    
+    text = text.replace("<strong>", "[b]")
+    text = text.replace("</strong>", "[/b]")
+    
+    text = text.replace("<em>", "[i]")
+    text = text.replace("</em>", "[/i]")
+    
+    text = text.replace("<u>", "[u]")
+    text = text.replace("</u>", "[/u]")
+    
+    text = replace_html_tags(text, '<p class="ql-align-center">', '</p>', '[c]', '[/c]')
+    text = replace_html_tags(text, '<p class="ql-align-right">', '</p>', '[r]', '[/r]')
+    
+    #TODO: les img
+    text = replace_img_tags(text)
+    return text
+
+
+
+def formatEntrée(content): #Prend un texte en entrée et le rend propre pour la BDD
+    #Ici on remplace les balises
+    content = convert_to_custom_tags(content)
+    #Puis on nettoie
+    content = bleach.clean(content, tags=[], attributes={}, strip=True)
+    
+    return content

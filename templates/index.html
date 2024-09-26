@@ -40,7 +40,7 @@
 
     <h2>La penséedeo du jour</h2>
     <hr/>
-    {#TODO: La penséedeo#}
+    {#La penséedeo#}
     <div class="penseedeo">
         <p>[{{penseedeo["date"]}}] par <a href="{{penseedeo['auteur_lien']}}">{{penseedeo["auteur"]}}</a> - <a href="{{penseedeo['lien']}}">Toutes les penséedéo</a></p>
         <div class="content">
@@ -51,8 +51,37 @@
     <hr/>
     <div id="minichat">
         <div class="commentaire" id="minichat_messages"">{{minichat_messages|safe}}</div>
-        {% if account %}
-        {#On devrait pouvoir poster, etc#}
+        {% if session.logged %}
+        {#L'ÉCRITURE DE MESSAGES#}
+        {#Ouais je sais que ça a rien à faire là#}
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+        <!-- Create the editor container -->
+        <div class="text_editor">
+            <div id="editor"></div>
+            <div class="button" onclick="poster_message()">Poster</div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+        <script src="/static/editor.js"></script>
+
+        <script>
+            function poster_message() {
+                const contentHTML = quill.root.innerHTML;
+                const formData = new FormData();
+                    formData.append("token", temp_token);
+                    formData.append("content", contentHTML)
+            
+                    const response = fetch("/comptes/minichat_send_msg", {
+                        method: "POST",
+                        body: formData,
+                    }).then(data => {
+                        // Traitez les données de la réponse ici
+                        console.log('Success:', data);
+                        refreshChat()
+                        quill.setContents("");
+                    });
+            }
+        </script>
+        
         {% else %}
         <p>Vous devez être connecté pour participer au chat.<br/></p>
         {% endif %}

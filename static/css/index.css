@@ -43,3 +43,17 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.text_editor {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#editor {
+    height: 15em; 
+}
+
+.text_editor .button {
+    margin-top: 0.5em;
+    background-color: rgb(86, 144, 93);
+}
