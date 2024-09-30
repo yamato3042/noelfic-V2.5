@@ -114,6 +114,43 @@
             </div>
         </div>
         {% endfor %}
+
+
+        {% if session.logged %}
+        {#L'ÉCRITURE DE MESSAGES#}
+        {#Ouais je sais que ça a rien à faire là#}
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+        <!-- Create the editor container -->
+        <div class="text_editor">
+            <div id="editor"></div>
+            <div class="button" onclick="poster_message()">Poster</div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+        <script src="/static/editor.js"></script>
+
+        <script>
+            function poster_message() {
+                const contentHTML = quill.root.innerHTML;
+                const formData = new FormData();
+                    formData.append("token", temp_token);
+                    formData.append("content", contentHTML)
+                    formData.append("chapitre", '{{chapitre["chapitre_id"]}}')
+
+                    const response = fetch("/comptes/chapitre_send_comment", {
+                        method: "POST",
+                        body: formData,
+                    }).then(data => {
+                        // Traitez les données de la réponse ici
+                        console.log('Success:', data);
+                        //Rafraichir la page
+                        location.reload()
+                    });
+            }
+        </script>
+        
+        {% else %}
+        <p>Vous devez être connecté pour poster un commentaire<br/><br/></p>
+        {% endif %}
+
     </div>
-    <p>Vous devez être connecté pour poster un commentaire</p> {#TODO:Normalement c'est si bah pas connecté.#}
 {% endblock %}

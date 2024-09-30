@@ -145,7 +145,7 @@ def convert_to_custom_tags(text):
     text = replace_html_tags(text, '<p class="ql-align-center">', '</p>', '[c]', '[/c]')
     text = replace_html_tags(text, '<p class="ql-align-right">', '</p>', '[r]', '[/r]')
     
-    #TODO: les img
+    #Les img
     text = replace_img_tags(text)
     return text
 

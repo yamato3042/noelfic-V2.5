@@ -40,7 +40,6 @@ def changenote():
     return "OK"
 
 def minichat_send_msg():
-    print(request.form)
     for i in ["token", "content"]:
         if i not in request.form:
             return "ERR"
@@ -52,12 +51,38 @@ def minichat_send_msg():
     if userId == None:
         return "ERR"
     
-    #TODO: formater le content
+    #Formater le content
     formatedContent = util.formateur.formatEntrée(request.form["content"])
     
     
-    #TODO: on met dans la base
+    #On met dans la base
     cursor.execute("INSERT INTO chat_messages (auteur, date, content) VALUES (%s, NOW(), %s)", (userId, formatedContent,))
+    conn.commit()
+    
+    return "OK"
+
+
+def chapitre_send_comment():
+    for i in ["token", "content", "chapitre"]:
+        if i not in request.form:
+            return "ERR"
+    
+    print(request.form)
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        return "ERR"
+    
+    #Formater le content
+    formatedContent = util.formateur.formatEntrée(request.form["content"])
+
+    
+    #On met dans la base
+    cursor.execute("""INSERT INTO comments (auteur, chapitre, deleted, creation, content)
+                    VALUES (%s,%s, false, NOW(), %s)""", (userId, request.form["chapitre"], request.form["content"]))
     conn.commit()
     
     return "OK"

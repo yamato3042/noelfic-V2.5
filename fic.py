@@ -54,6 +54,7 @@ def fic(fic_, chapitre_):
         "chapitre_auteur_lien" : util.general.getUserLink(chapitre_raw[0][7]),
         "chapitre_auteur" : chapitre_raw[0][7],
         "chapitre_content" : util.formateur.formater(chapitre_raw[0][8]),
+        "chapitre_id": chapitre_raw[0][9],
         "chapitre": chapitre,
         "nbChapitres": nbChapitres
     }

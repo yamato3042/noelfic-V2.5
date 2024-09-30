@@ -49,6 +49,7 @@ app.add_url_rule("/comptes/logout", view_func=accounts.logout.logout)
 
 app.add_url_rule("/comptes/changenote", view_func=accounts.ajax.changenote, methods=["POST"])
 app.add_url_rule("/comptes/minichat_send_msg", view_func=accounts.ajax.minichat_send_msg, methods=["POST"])
+app.add_url_rule("/comptes/chapitre_send_comment", view_func=accounts.ajax.chapitre_send_comment, methods=["POST"])
 
 @app.errorhandler(404)
 def error_404(e):
