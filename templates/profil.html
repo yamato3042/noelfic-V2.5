@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
     {% block content %}
+
+    {% if editButton %}
+    <a class="button" href="/comptes/modif_profil">Modifier mon profil</a>
+    {% endif %}
     <h1>{{info["pseudo"]}}</h1>
     
     <div class="selecteur">

@@ -22,6 +22,7 @@ def profil(profil):
     print(info_raw)
     id = info_raw[0][0]
     info = {
+        "id": info_raw[0][0],
         "pseudo": info_raw[0][1],
         "description": info_raw[0][2].replace("\n", "<br/>"),
         "derniere_conn": util.general.convDate(info_raw[0][5]),
@@ -65,7 +66,9 @@ def profil(profil):
 
     info["nbChapitres"] = len(chapitres)
 
-
+    editButton = False #Permet d'afficher le boutton pour modifier le profil
+    if session.logged and session.id == info["id"]:
+        editButton = True
 
     conn.close()
-    return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres, session=session)
+    return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres, session=session, editButton=editButton)

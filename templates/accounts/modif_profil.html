@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="">
+    <div>
+        <label for="pseudo">Pseudo : </label>
+        <input type="text" name="pseudo" id="pseudo" value="{{info['pseudo']}}" />
+    </div>
+
+    <div>
+        <label for="email">Email : </label>
+        <input type="email" name="email" id="email" value="{{info['mail']}}" />
+    </div>
+
+    <div class="comptes_externes">
+        {#Comptes sur les autres sites#}
+        <p>Comptes sur les autres sites :</p>
+        <div class="table">
+            {% for i in ["jvc", "onche", "avenoel", "2sucres"] %}
+            <div class="tr">
+                <div class="td"><img src="/static/img/sites_externes/{{i}}.png"></div>
+                <div class="td">{{i}}</div>
+                <div class="td"><input type="text" name="site_externe_{{i}}" id="site_externe_{{i}}"
+                        value="{{info['comptes_autres_sites'][i]}}" /></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="pp">
+        {#La photo de profil#}
+        <img src="{{info['avatar']}}" />
+        <a class="button">Changer de photo de profil</a>
+
+    </div>
+</form>
+<div>
+    <hr>
+    <h2>Description</h2>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <!-- Create the editor container -->
+    <div class="text_editor">
+        <div id="editor"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script src="/static/editor.js"></script>
+
+
+<a class="button">Valider</a>
+
+<script>
+    //TODO: envoyer vers la base les nouvelles info
+
+
+</script>
+{% endblock %}

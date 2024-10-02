@@ -14,6 +14,7 @@ import minichat
 
 import accounts.inscription
 import accounts.connexion
+import accounts.modif_profil
 import accounts.logout
 import accounts.ajax
 
@@ -46,6 +47,7 @@ def page_charte():
 app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription, methods=['GET', 'POST'])
 app.add_url_rule("/comptes/connexion", view_func=accounts.connexion.page_connexion, methods=['GET', 'POST'])
 app.add_url_rule("/comptes/logout", view_func=accounts.logout.logout)
+app.add_url_rule("/comptes/modif_profil", view_func=accounts.modif_profil.modif_profil)
 
 app.add_url_rule("/comptes/changenote", view_func=accounts.ajax.changenote, methods=["POST"])
 app.add_url_rule("/comptes/minichat_send_msg", view_func=accounts.ajax.minichat_send_msg, methods=["POST"])

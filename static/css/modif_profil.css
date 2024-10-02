@@ -1,0 +1,74 @@
+.content {
+    margin-left: 2em;
+    margin-right: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.content form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5em;
+    border: 1px solid black;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em;
+}
+
+.content form div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.4em;
+}
+
+.text_editor {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#editor {
+    height: 30em; 
+}
+
+.content form .comptes_externes {  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5em;
+    border: 1px solid gray;
+    text-align: center;
+    padding: 1em;
+}
+
+.comptes_externes .table {
+    border-collapse: collapse;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+.comptes_externes .table .tr {
+    font-size: 15px;
+    font-weight: normal;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    
+}
+
+.comptes_externes img {
+    height: 30px;
+    width: auto;
+}
+
+.content form .pp {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.content form .pp img {
+    width: 6em;
+}
