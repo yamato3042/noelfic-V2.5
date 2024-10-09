@@ -58,7 +58,7 @@
 <script src="/static/editor.js"></script>
 
 
-<a class="button" onclick="valider()">Valider</a>
+<a class="button" id="valider" onclick="valider()">Valider</a>
 
 <script>
     //Envoyer vers la base les nouvelles info
@@ -80,6 +80,10 @@
         }).then(data => {
             // Traitez les données de la réponse ici
             console.log('Success:', data);
+            // On vas rediriger
+            window.location.href="{{session.profil_lien}}"
+            
+
         });
     }
 
