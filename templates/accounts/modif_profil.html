@@ -3,12 +3,22 @@
 <form action="">
     <div>
         <label for="pseudo">Pseudo : </label>
-        <input type="text" name="pseudo" id="pseudo" value="{{info['pseudo']}}" />
+        <input type="text" name="pseudo" id="pseudo" value="{{info['pseudo']}}" disabled/>
     </div>
 
     <div>
         <label for="email">Email : </label>
         <input type="email" name="email" id="email" value="{{info['mail']}}" />
+    </div>
+
+    <div>
+        <label for="mdp1">Ancien mot de passe : </label>
+        <input type="password" name="mdp1" id="mdp1"/>
+
+        <label for="mdp2">Nouveau mot de passe : </label>
+        <input type="password" name="mdp2" id="mdp2"/>
+
+        <button> Changer de mot de passe </button>
     </div>
 
     <div class="comptes_externes">
@@ -39,17 +49,41 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     <!-- Create the editor container -->
     <div class="text_editor">
-        <div id="editor"></div>
+        <div id="editor">
+            {{info["description"]}}
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 <script src="/static/editor.js"></script>
 
 
-<a class="button">Valider</a>
+<a class="button" onclick="valider()">Valider</a>
 
 <script>
-    //TODO: envoyer vers la base les nouvelles info
+    //Envoyer vers la base les nouvelles info
+    function valider() {
+        const formData = new FormData();
+
+        formData.append("token", temp_token);
+        formData.append("description", quill.root.innerHTML)
+        formData.append("email", document.getElementById("email").value)
+        
+        for(let i of ["jvc", "onche", "avenoel", "2sucres"]) {
+            let val = document.getElementById("site_externe_" + i).value
+            formData.append("site_externe_" + i, val)
+        }
+
+        const response = fetch("/comptes/ajax_modif_profil", {
+            method: "POST",
+            body: formData,
+        }).then(data => {
+            // Traitez les données de la réponse ici
+            console.log('Success:', data);
+        });
+    }
+
+    //TODO: changer pp
 
 
 </script>

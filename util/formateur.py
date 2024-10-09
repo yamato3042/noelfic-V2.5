@@ -158,3 +158,7 @@ def formatEntrée(content): #Prend un texte en entrée et le rend propre pour la
     content = bleach.clean(content, tags=[], attributes={}, strip=True)
     
     return content
+
+def desinfecter(content):
+    content = bleach.clean(content, tags=[], attributes={}, strip=True)
+    return content

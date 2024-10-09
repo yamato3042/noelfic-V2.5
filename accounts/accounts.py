@@ -20,23 +20,11 @@ class Session:
         self.temp_token = ""
         self.id = -1
         
-        #Connexion à la base si y'a rien
-        """if self.cursor == None:
-            self.conn = util.bdd.getConnexion()
-            self.cursor = self.conn.cursor()"""
         #Login avec token normal
         if "userToken" in request.cookies:
             self.login(request.cookies.get("userToken"))
-        #Login avec token temporaire
-        #Si c'est un token temporaire alors c'est en post
-        if request.method == "POST":
-            if "tempToken" in request.form:
-                self.loginTempToken(request.form.get("tempToken"))
                 
         self.pp_photo = util.general.getAvatar(self.pseudo, self.pp)
-    """def __del__(self):
-        if self.conn != None:
-            self.conn.close()"""
             
     def login(self, token):
         #Connexion avec le token du cookie
@@ -53,11 +41,17 @@ class Session:
             self.profil_lien = util.general.getUserLink(self.pseudo)
             #Génération du token temporaire
             self.temp_token = genTempToken(self.cursor, self.id)
+            self.update_last_logon()
             self.connection.commit()
             
     
     def loginTempToken(self, token): 
         #Connexion avec le token temporaire
+        pass
+    
+    def update_last_logon(self):
+        self.cursor.execute("UPDATE users SET derniere_conn = NOW() WHERE id = %s", (self.id,))
+        self.connection.commit()
         pass
 
 

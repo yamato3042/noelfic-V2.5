@@ -4,6 +4,7 @@ import util.bdd
 from flask import request
 import psycopg2
 import util.formateur
+import json
 
 def getUserIdFromTempToken(cursor : psycopg2.extensions.cursor, token):
     cursor.execute("SELECT id_users FROM users_shorts_tokens WHERE token = %s", (request.form["token"],))
@@ -85,4 +86,41 @@ def chapitre_send_comment():
                     VALUES (%s,%s, false, NOW(), %s)""", (userId, request.form["chapitre"], request.form["content"]))
     conn.commit()
     
+    return "OK"
+
+
+
+def ajax_modif_profil():
+    for i in ["token", "description", "email"]:
+        if i not in request.form:
+            return "ERR"
+    site_externes = ["jvc", "onche", "avenoel", "2sucres"]
+    for i in site_externes:
+        if f"site_externe_{i}" not in request.form:
+            return "ERR"
+        
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        return "ERR"
+    
+    
+    description = util.formateur.desinfecter(request.form["description"])
+    email = util.formateur.desinfecter(request.form["email"])
+    #Comptes autres sites
+    comptes_autres_sites = []
+    for i in site_externes:
+        val = util.formateur.desinfecter(request.form[f"site_externe_{i}"])
+        if val != "":
+            comptes_autres_sites.append({"site": i, "pseudo": val})
+    
+    cursor.execute("""UPDATE users
+                SET mail = %s, description = %s, comptes_autres_sites = %s
+                WHERE id = %s""",
+                (email, description, json.dumps(comptes_autres_sites), userId,))   
+    conn.commit() 
+    
+    print("ok")
     return "OK"

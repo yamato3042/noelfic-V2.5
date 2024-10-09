@@ -24,7 +24,7 @@ def profil(profil):
     info = {
         "id": info_raw[0][0],
         "pseudo": info_raw[0][1],
-        "description": info_raw[0][2].replace("\n", "<br/>"),
+        "description": util.formateur.formater(info_raw[0][2]),
         "derniere_conn": util.general.convDate(info_raw[0][5]),
     }
 
