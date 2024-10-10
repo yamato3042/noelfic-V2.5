@@ -18,7 +18,7 @@
         <label for="mdp2">Nouveau mot de passe : </label>
         <input type="password" name="mdp2" id="mdp2"/>
 
-        <button> Changer de mot de passe </button>
+        <button onclick="changerMDP()" type='button'> Changer de mot de passe </button>
     </div>
 
     <div class="comptes_externes">
@@ -85,6 +85,34 @@
             
 
         });
+    }
+
+    //Changement de mot de passe
+    async function changerMDP() {
+        let ancien_mdp = document.getElementById("mdp1").value
+        let nouveau_mdp = document.getElementById("mdp2").value
+        if(ancien_mdp == "" || nouveau_mdp == "") {
+            alert("Merci de remplir les champs")
+            return
+        }
+
+        console.log("Ancien mdp : ", ancien_mdp)
+        console.log("Nouveau mdp : ", nouveau_mdp)
+
+        const formData = new FormData();
+        formData.append("token", temp_token);
+        formData.append("ancien_mdp", ancien_mdp)
+        formData.append("nouveau_mdp", nouveau_mdp)
+
+        const response = await fetch("/comptes/ajax_modif_mdp", {
+            method: "POST",
+            body: formData,
+        })
+
+        let data = await response.text()
+        console.log(data)
+        if(data == "ERRMDP") {alert("Mot de passe invalide")}
+        if(data == "OK") {window.location.href = "/comptes/connexion"}
     }
 
     //TODO: changer pp

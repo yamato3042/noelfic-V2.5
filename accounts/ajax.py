@@ -5,6 +5,8 @@ from flask import request
 import psycopg2
 import util.formateur
 import json
+import accounts.accounts
+from werkzeug.security import check_password_hash, generate_password_hash
 
 def getUserIdFromTempToken(cursor : psycopg2.extensions.cursor, token):
     cursor.execute("SELECT id_users FROM users_shorts_tokens WHERE token = %s", (request.form["token"],))
@@ -123,4 +125,36 @@ def ajax_modif_profil():
     conn.commit() 
     
     print("ok")
+    return "OK"
+
+def ajax_modif_mdp():
+    for i in ["token", "ancien_mdp", "nouveau_mdp"]:
+        if i not in request.form:
+            return "ERR"        
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        return "ERR"
+    
+    #On compare le mot de passe
+    cursor.execute("SELECT mdp FROM users WHERE id = %s", (userId,))
+    val = cursor.fetchall()
+    
+    if not check_password_hash(val[0][0], request.form["ancien_mdp"]+accounts.accounts.PASSWORD_SALT):
+        return "ERRMDP"
+    
+    #Changer le mdp dans la bdd
+    #Génération du hash
+    new_mdp = generate_password_hash(request.form["nouveau_mdp"] + accounts.accounts.PASSWORD_SALT)
+    #Insertion dans la BDD
+    cursor.execute("UPDATE users SET mdp = %s WHERE id = %s", (new_mdp, userId))
+    #Supression de tous les tokens pour cette utilisateur
+    cursor.execute("DELETE FROM users_token WHERE id_users = %s", (userId,))
+    cursor.execute("DELETE FROM users_shorts_tokens WHERE id_users = %s", (userId,))
+    
+    conn.commit()
+    util.bdd.releaseConnexion(conn)
+
     return "OK"
