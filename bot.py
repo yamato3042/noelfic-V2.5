@@ -1,6 +1,8 @@
 #Ce script est un bot qui doit tourner à peu près toutes les dix minutes pour mettre à jour les notes et aussi suprimmer les tokens périmés
 
 import psycopg2
+import datetime
+import time
 
 def updateNotes(cursor: psycopg2.extensions.cursor):
     #Récupère toutes les notes
@@ -34,6 +36,12 @@ def clean_tokens(cursor: psycopg2.extensions.cursor):
     print("Nettoyage des tokens utilisateurs")
     cursor.execute("DELETE FROM users_token WHERE lastconn < NOW() - INTERVAL '6 months';")
     
+debut = time.perf_counter()
+date_début = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+f = open("bot.log", "a")
+f.write(f"[{date_début}] Starting job\n")
+f.close()
+
 conn = psycopg2.connect(database="noelfic",
                         host="localhost",
                         user="postgres",
@@ -47,3 +55,12 @@ clean_shorts_tokens(cursor)
 
 conn.commit()
 conn.close()
+
+fin = time.perf_counter()
+duree = (fin - debut) * 1000  # Convertir en millisecondes
+
+date_fin = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+f = open("bot.log", "a")
+f.write(f"[{date_début}] Ending job, {duree:.6f}ms\n")
+f.close()
