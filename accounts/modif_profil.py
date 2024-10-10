@@ -23,9 +23,6 @@ def modif_profil():
     }
     
     print(info["comptes_autres_sites"])
-    #TODO: Mettre les info présentes dans la base
-    
-    #TODO: Système ajout de compte sur les autres sites
     #TODO: Système changement de PP
     
     util.bdd.releaseConnexion(conn)

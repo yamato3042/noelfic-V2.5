@@ -29,6 +29,7 @@ def logout():
         #On suprimme le cookie
         resp = make_response(redirect("/"))
         resp.delete_cookie("userToken")
+        util.bdd.releaseConnexion(conn)
         return resp
     
     util.bdd.releaseConnexion(conn)

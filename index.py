@@ -41,6 +41,5 @@ def index():
     #Le chat
     minichat_messages = minichat.render_chat(cursor)
 
-    conn.close()
-
+    util.bdd.releaseConnexion(conn)
     return render_template("index.html", session=session, customCSS="index.css", chapitres=chapitres, penseedeo=penseedeo, minichat_messages=minichat_messages)

@@ -17,7 +17,7 @@ def profil(profil):
                     FROM users WHERE validee = true AND pseudo ILIKE %s""", (profil,))
     info_raw = cursor.fetchall()
     if len(info_raw) < 1:
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     print(info_raw)
     id = info_raw[0][0]
@@ -70,5 +70,5 @@ def profil(profil):
     if session.logged and session.id == info["id"]:
         editButton = True
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres, session=session, editButton=editButton)

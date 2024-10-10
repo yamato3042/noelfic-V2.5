@@ -18,7 +18,7 @@ def classement_tout(page_):
 
     pages_raw = util.classements.getPages(page, cursor)
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -36,7 +36,7 @@ def classement_tout(page_):
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session)
 
 def classement_popularite(page_):
@@ -50,7 +50,7 @@ def classement_popularite(page_):
 
     pages_raw = util.classements.getPages(page, cursor)
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -68,7 +68,7 @@ def classement_popularite(page_):
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session)
 
 def classement_date(page_):
@@ -82,7 +82,7 @@ def classement_date(page_):
 
     pages_raw = util.classements.getPages(page, cursor)
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -100,7 +100,7 @@ def classement_date(page_):
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session)
 
 def classement_note(page_):
@@ -114,7 +114,7 @@ def classement_note(page_):
 
     pages_raw = util.classements.getPages(page, cursor)
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -132,7 +132,7 @@ def classement_note(page_):
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session)
 
 
@@ -156,7 +156,7 @@ def classement_genre(genre_,page_):
 
     pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics RIGHT JOIN tags ON tags.fic = fics.id WHERE tag = " + str(genreId)) #TODO: oups la faille (impossible)
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -176,5 +176,5 @@ def classement_genre(genre_,page_):
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", modeGenre=True, titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session)

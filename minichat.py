@@ -21,7 +21,6 @@ def render_chat(cursor: psycopg2.extensions.cursor, limit = 20):
         cur["pseudo"] = i[3]
 
         cur["lien"] = util.general.getUserLink(i[3])
-        #TODO: lien pseudo
         messages.append(cur)
     return render_template("minichat.html", msg=messages)
 
@@ -29,7 +28,7 @@ def action_get_chat_messages():
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
     ret = render_chat(cursor)
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return ret
 
 def page_minichat():
@@ -38,5 +37,5 @@ def page_minichat():
     cursor = conn.cursor()
     session = accounts.accounts.Session(conn)
     messages = render_chat(cursor, limit=None) #On met la limit sur null pour qu'il n'y en ai pas
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("minichat_all.html", titre="Tous les messages du minichat", customCSS="minichat_all.css", messages=messages, session=session)

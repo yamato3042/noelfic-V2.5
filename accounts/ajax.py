@@ -28,6 +28,7 @@ def changenote():
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
+        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On change la note
@@ -52,6 +53,7 @@ def minichat_send_msg():
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
+        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #Formater le content
@@ -62,6 +64,7 @@ def minichat_send_msg():
     cursor.execute("INSERT INTO chat_messages (auteur, date, content) VALUES (%s, NOW(), %s)", (userId, formatedContent,))
     conn.commit()
     
+    util.bdd.releaseConnexion(conn)
     return "OK"
 
 
@@ -77,6 +80,7 @@ def chapitre_send_comment():
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
+        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #Formater le content
@@ -87,7 +91,8 @@ def chapitre_send_comment():
     cursor.execute("""INSERT INTO comments (auteur, chapitre, deleted, creation, content)
                     VALUES (%s,%s, false, NOW(), %s)""", (userId, request.form["chapitre"], request.form["content"]))
     conn.commit()
-    
+
+    util.bdd.releaseConnexion(conn)
     return "OK"
 
 
@@ -106,6 +111,7 @@ def ajax_modif_profil():
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
+        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     
@@ -124,7 +130,7 @@ def ajax_modif_profil():
                 (email, description, json.dumps(comptes_autres_sites), userId,))   
     conn.commit() 
     
-    print("ok")
+    util.bdd.releaseConnexion(conn)
     return "OK"
 
 def ajax_modif_mdp():
@@ -136,6 +142,7 @@ def ajax_modif_mdp():
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
+        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On compare le mot de passe
@@ -143,6 +150,7 @@ def ajax_modif_mdp():
     val = cursor.fetchall()
     
     if not check_password_hash(val[0][0], request.form["ancien_mdp"]+accounts.accounts.PASSWORD_SALT):
+        util.bdd.releaseConnexion(conn)
         return "ERRMDP"
     
     #Changer le mdp dans la bdd

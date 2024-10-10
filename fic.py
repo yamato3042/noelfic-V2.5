@@ -38,7 +38,7 @@ def fic(fic_, chapitre_):
                     WHERE fics.id = %s AND chapitres.num = %s""", (fic,chapitre,))
     chapitre_raw = cursor.fetchall()
     if len(chapitre_raw) == 0:
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     
     #On traite le chapitre
@@ -108,4 +108,5 @@ def fic(fic_, chapitre_):
 
 
     titre = f"{chapitre_dic["fic_titre"]} page {chapitre_dic["chapitre"]}"
+    util.bdd.releaseConnexion(conn)
     return render_template("fic.html", titre=titre, customCSS="fic.css", ajout_sidebar=render_template("fic_nav.html", listeChapitres=listChapitres), chapitre=chapitre_dic, commentaires=commentaires, session=session)

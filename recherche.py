@@ -22,7 +22,7 @@ def recherche():
 
     pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics WHERE titre ILIKE %s", (f"%{search}%",))
     if pages_raw == "err":
-        conn.close()
+        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -42,5 +42,5 @@ def recherche():
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search, session=session)

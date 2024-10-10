@@ -19,6 +19,7 @@ def connexionUser(pseudo, password):
     #Vérification du mot de passe
     print(val[0][1])
     if not check_password_hash(val[0][1], password+accounts.accounts.PASSWORD_SALT):
+        util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
     
     #Génération du token
@@ -35,6 +36,7 @@ def connexionUser(pseudo, password):
     conn.commit()
     
     #On retourne la clée
+    util.bdd.releaseConnexion(conn)
     return [True, clée]
 
 def page_connexion():

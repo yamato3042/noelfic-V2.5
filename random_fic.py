@@ -16,5 +16,5 @@ def random_fic():
     ret = cursor.fetchone()
     lien = util.general.getFicLink(ret[0], ret[1])
 
-    conn.close()
+    util.bdd.releaseConnexion(conn)
     return redirect(lien)
