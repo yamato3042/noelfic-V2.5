@@ -22,8 +22,5 @@ def modif_profil():
         "comptes_autres_sites": {item['site']: item['pseudo'] for item in info_raw[3]}
     }
     
-    print(info["comptes_autres_sites"])
-    #TODO: Système changement de PP
-    
     util.bdd.releaseConnexion(conn)
     return render_template("accounts/modif_profil.html", customCSS="modif_profil.css", session=session, info=info)

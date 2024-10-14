@@ -38,8 +38,9 @@
 
     <div class="pp">
         {#La photo de profil#}
-        <img src="{{info['avatar']}}" />
-        <a class="button">Changer de photo de profil</a>
+        <img class="ppimg" src="{{info['avatar']}}" id="imagePreview"/>
+        {#<a class="button">Changer de photo de profil</a>#}
+        <input type="file" id="fileInput" accept="image/png, image/jpeg">
 
     </div>
 </form>
@@ -74,6 +75,14 @@
             formData.append("site_externe_" + i, val)
         }
 
+        //La pp :
+        if(changed_pp == true) {
+            //Changement de pp on ajoute
+            let file = document.getElementById('fileInput').files[0];
+            console.log(file)
+            formData.append('pp', file);
+        }
+
         const response = fetch("/comptes/ajax_modif_profil", {
             method: "POST",
             body: formData,
@@ -104,11 +113,6 @@
         formData.append("ancien_mdp", ancien_mdp)
         formData.append("nouveau_mdp", nouveau_mdp)
 
-        const response = await fetch("/comptes/ajax_modif_mdp", {
-            method: "POST",
-            body: formData,
-        })
-
         let data = await response.text()
         console.log(data)
         if(data == "ERRMDP") {alert("Mot de passe invalide")}
@@ -116,6 +120,24 @@
     }
 
     //TODO: changer pp
+    
+    changed_pp = false
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('imagePreview');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            changed_pp = true
+        } else {
+            alert('Veuillez sélectionner un fichier PNG ou JPG.');
+            changed_pp = false
+        }
+    });
 
 
 </script>

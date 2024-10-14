@@ -7,6 +7,9 @@ import util.formateur
 import json
 import accounts.accounts
 from werkzeug.security import check_password_hash, generate_password_hash
+from PIL import Image
+import util.general
+import io
 
 def getUserIdFromTempToken(cursor : psycopg2.extensions.cursor, token):
     cursor.execute("SELECT id_users FROM users_shorts_tokens WHERE token = %s", (request.form["token"],))
@@ -73,7 +76,6 @@ def chapitre_send_comment():
         if i not in request.form:
             return "ERR"
     
-    print(request.form)
     
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
@@ -127,9 +129,34 @@ def ajax_modif_profil():
     cursor.execute("""UPDATE users
                 SET mail = %s, description = %s, comptes_autres_sites = %s
                 WHERE id = %s""",
-                (email, description, json.dumps(comptes_autres_sites), userId,))   
-    conn.commit() 
+                (email, description, json.dumps(comptes_autres_sites), userId,))
     
+    
+    #La pp
+    if "pp" in request.files:
+        file = request.files["pp"]
+        
+        if file.mimetype not in ['image/jpeg', 'image/png']:
+            return "ERRIMG_MIME"
+        try:
+            # Ouvre l'image en utilisant PIL
+            image = Image.open(io.BytesIO(file.read()))
+        except Exception as e:
+            # Renvoie une erreur si l'image ne peut pas être ouverte
+            return "ERRIMG"
+        
+        resized_image = image.resize((144, 144))
+        #On récupère le pseudo
+        cursor.execute("UPDATE users SET pp = true WHERE id = %s RETURNING pseudo", (userId,))
+        val_pseudo = cursor.fetchone()
+        #On crée le nom du fichier
+        nom = util.general.getAvatar(val_pseudo[0], True)[1:]
+        #On enregistre l'image
+        resized_image.save(nom)
+        
+    
+    
+    conn.commit() 
     util.bdd.releaseConnexion(conn)
     return "OK"
 
@@ -160,7 +187,7 @@ def ajax_modif_mdp():
     cursor.execute("UPDATE users SET mdp = %s WHERE id = %s", (new_mdp, userId))
     #Supression de tous les tokens pour cette utilisateur
     cursor.execute("DELETE FROM users_token WHERE id_users = %s", (userId,))
-    cursor.execute("DELETE FROM users_shorts_tokens WHERE id_users = %s", (userId,))
+    cursor.execute("DELETE FROM users_shorts_tokens WHERE id_users = %s", (userId,))    
     
     conn.commit()
     util.bdd.releaseConnexion(conn)

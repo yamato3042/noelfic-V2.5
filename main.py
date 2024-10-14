@@ -1,5 +1,9 @@
 from flask import Flask, render_template, redirect, url_for 
 app = Flask(__name__)
+
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
+
+
 import psycopg2
 import util.bdd
 import accounts.accounts

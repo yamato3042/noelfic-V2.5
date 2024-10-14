@@ -69,6 +69,8 @@
     align-items: center;
 }
 
-.content form .pp img {
-    width: 6em;
+
+.ppimg {
+    width: 144px;
+    height: 144px;
 }
