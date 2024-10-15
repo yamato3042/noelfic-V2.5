@@ -21,6 +21,7 @@ import accounts.connexion
 import accounts.modif_profil
 import accounts.logout
 import accounts.ajax
+import accounts.edit_fic
 
 app.add_url_rule("/", view_func=index.index)
 app.add_url_rule("/actions/action_get_chat_messages", view_func=minichat.action_get_chat_messages)
@@ -58,6 +59,9 @@ app.add_url_rule("/comptes/minichat_send_msg", view_func=accounts.ajax.minichat_
 app.add_url_rule("/comptes/chapitre_send_comment", view_func=accounts.ajax.chapitre_send_comment, methods=["POST"])
 app.add_url_rule("/comptes/ajax_modif_profil", view_func=accounts.ajax.ajax_modif_profil, methods=["POST"])
 app.add_url_rule("/comptes/ajax_modif_mdp", view_func=accounts.ajax.ajax_modif_mdp, methods=["POST"])
+
+app.add_url_rule("/comptes/edit_fics", view_func=accounts.edit_fic.edit_fic_page)
+app.add_url_rule("/comptes/edit_fics/getFics", view_func=accounts.edit_fic.getfics, methods=["POST"])
 
 @app.errorhandler(404)
 def error_404(e):

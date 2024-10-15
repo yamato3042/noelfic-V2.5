@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <h1>Espace d'écriture</h1>
+    <div class="part">
+        <h2>Sélection de la fic</h2>
+        {#La sélection de la fic#}
+        <label for="fic_select">Fic à éditer : </label>
+        <select name="fic_select" id="fic_select" onchange="fic_editor.fic_select_onchange()"></select>
+        <button>Écrire une nouvelle fic</button>
+    </div>
+
+    <div class="part">
+        <h2>Personalisation de la fic</h2>
+        <label for="perso_colab_select">Collaborateurs : </label>
+        <select name="perso_colab_select" id="perso_colab_select"></select>
+        <button>+</button>
+        <button>-</button>
+        {#La personalisation de la fic#}
+    </div>
+    <div class="part">
+        <h2>Sélection du chapitre</h2>
+        <label for="chap_select">Chapitre : </label>
+        <select name="chap_select" id="chap_select"></select>
+        <button>+</button>
+        {#La sélection du chapitre#}
+    </div>
+
+    <div class="part">
+        <h2>Contenue du chapitre</h2>
+        {#L'écriture du chapitre#}
+        {#TODO: mettre le truc quill#}
+        <button>Enregistrer</button>
+    </div>
+
+
+    <script src="/static/edit_fics.js"></script>
+{% endblock %}
