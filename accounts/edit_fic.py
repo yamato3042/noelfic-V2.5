@@ -11,8 +11,8 @@ def edit_fic_page():
     session = accounts.accounts.Session(conn)
     
     if not session.logged:
-        redirect("/")
-    
+        return redirect("/")
+        
     util.bdd.releaseConnexion(conn)
     return render_template("accounts/edit_fics.html", customCSS="edit_fics.css", session=session)
 
@@ -98,17 +98,20 @@ def collaborateur_delete():
         return "ERR"
     
     if toremove == userId:
+        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On récupère le proprio pour pas pouvoir l'enlever
     cursor.execute("SELECT auteur FROM fics WHERE id = %s", (fic,))
     proprio = cursor.fetchone()[0]
     if toremove == proprio:
+        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
+        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #Tout est bon, on enlève de la BDD
@@ -117,3 +120,38 @@ def collaborateur_delete():
     
     util.bdd.releaseConnexion(conn)
     return "OK"
+
+def collaborateur_add():
+    util.ajax_util.checkFormsVal(["token", "fic", "user"])
+        
+    fic = int(request.form["fic"])
+    username = request.form["user"]
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        util.bdd.releaseConnexion(conn)
+        return "ERR"
+    
+    #On regarde si l'user existe
+    cursor.execute("SELECT id FROM users WHERE pseudo ILIKE %s", (username,))
+    val = cursor.fetchall()
+    if len(val) != 1:
+        util.bdd.releaseConnexion(conn)
+        return "ERR_INVALID_USER"
+    username_id = val[0][0]
+    #On regarde si il y est pas déjà dedans
+    cursor.execute("SELECT FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, username_id,))
+    val = cursor.fetchall()
+    if len(val) != 0:
+        util.bdd.releaseConnexion(conn)
+        return "ERR_ALREADY_USER"
+    
+    #On l'ajoute
+    cursor.execute("INSERT INTO collaborateur VALUES (%s, %s)", (fic,username_id,))
+    conn.commit()
+    
+    util.bdd.releaseConnexion(conn)
+    return "OK" 

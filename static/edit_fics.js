@@ -82,7 +82,27 @@ class Fic_editor {
         });
     }
 
-    add_collaborateurs() {
+    async add_collaborateurs() {
+        //Petit message pour demander le nom du collaborateur
+        let username = prompt("Veuillez entrer le pseudo de l'utilisateur")
+        if (username == "") {
+            alert("Veuillez entrer une valeur valide.")
+            return
+        }
+        //On fait la requête
+        let fic = document.getElementById("fic_select").value
+        let ret = await fetch_val("collaborateur_add", {"fic" : fic, "user": username}, "text");
+
+        if(ret == "OK") {
+            this.get_collaborateurs()
+        } else if(ret == "ERR_INVALID_USER") {
+            alert("Utilisateur invalide.")
+
+        } else if(ret == "ERR_ALREADY_USER") {
+            alert("L'utilisateur est déjà là.")
+        } else {
+            alert("Erreur")
+        }
     }
 
     async remove_collaborateurs() {

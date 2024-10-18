@@ -64,6 +64,7 @@ app.add_url_rule("/comptes/edit_fics", view_func=accounts.edit_fic.edit_fic_page
 app.add_url_rule("/comptes/edit_fics/getFics", view_func=accounts.edit_fic.getfics, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/collaborateur_select", view_func=accounts.edit_fic.getcolaborateurs, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/collaborateur_delete", view_func=accounts.edit_fic.collaborateur_delete, methods=["POST"])
+app.add_url_rule("/comptes/edit_fics/collaborateur_add", view_func=accounts.edit_fic.collaborateur_add, methods=["POST"])
 
 @app.errorhandler(404)
 def error_404(e):
