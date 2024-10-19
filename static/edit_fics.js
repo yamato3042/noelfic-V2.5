@@ -61,6 +61,7 @@ class Fic_editor {
         //Lorsque l'élement courant de fic_select change
         console.log("fic select change")
         this.get_collaborateurs()
+        this.get_personalisation()
     }
     fic_select_new() {
         //Permet de créer une nouvelle fic
@@ -69,7 +70,6 @@ class Fic_editor {
     async get_collaborateurs() {
         let fic = document.getElementById("fic_select").value
         let collaborateurs = await fetch_val("collaborateur_select", {"fic" : fic});
-        console.log(collaborateurs)
         //On affiche les valeurs
         let select = document.getElementById("perso_colab_select")
         select_clean(select)
@@ -125,6 +125,33 @@ class Fic_editor {
             alert("Erreur")
         }
 
+    }
+
+
+    async get_personalisation() {
+        let fic = document.getElementById("fic_select").value
+        let val = await fetch_val("personalisation_get", {"fic" : fic})
+
+        console.log(val)
+
+        document.getElementById("perso_fic_titre").value = val["titre"]
+        document.getElementById("perso_fic_status").value = val["status"]
+        document.getElementById("perso_fic_lien").value = val["lien"]
+        choices.setChoiceByValue(val["tags"]);
+        document.getElementById("perso_fic_description").value = val["description"]
+    }
+
+    async save_personalisation() {
+        let fic = document.getElementById("fic_select").value
+
+        let valeur = { //Je vais mettre les valeurs en JSON ce sera moins chiant pour le multipart machin
+            "titre": document.getElementById("perso_fic_titre").value,
+            "status": document.getElementById("perso_fic_status").value,
+            "lien": document.getElementById("perso_fic_lien").value,
+            "tags": choices.getValue(true),
+            "description": document.getElementById("perso_fic_description").value
+        }
+        await fetch_val("personalisation_set", {"fic" : fic, "val": JSON.stringify(valeur)}, "TEXT")
     }
 
     cacheur(val) {

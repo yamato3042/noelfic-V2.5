@@ -18,7 +18,7 @@ def getUserLink(user: str) -> str:
 def convDate(date: datetime):
     return date.strftime("%d/%m/%y à %H:%M:%S")
 
-def getStatus(status: int) -> str:
+def getDicStatus():
     dicStatus = {
         1: "En cours",
         2: "En cours, sweet quotidienne",
@@ -32,6 +32,10 @@ def getStatus(status: int) -> str:
         14: "Terminée, viens de la V1",
         15: "Abandonnée, viens de la V1",
     }
+    return dicStatus
+
+def getStatus(status: int) -> str:
+    dicStatus = getDicStatus()
 
     if status in dicStatus:
         return dicStatus[status]

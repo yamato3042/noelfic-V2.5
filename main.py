@@ -65,6 +65,8 @@ app.add_url_rule("/comptes/edit_fics/getFics", view_func=accounts.edit_fic.getfi
 app.add_url_rule("/comptes/edit_fics/collaborateur_select", view_func=accounts.edit_fic.getcolaborateurs, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/collaborateur_delete", view_func=accounts.edit_fic.collaborateur_delete, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/collaborateur_add", view_func=accounts.edit_fic.collaborateur_add, methods=["POST"])
+app.add_url_rule("/comptes/edit_fics/personalisation_get", view_func=accounts.edit_fic.personalisation_get, methods=["POST"])
+app.add_url_rule("/comptes/edit_fics/personalisation_set", view_func=accounts.edit_fic.personalisation_set, methods=["POST"])
 
 @app.errorhandler(404)
 def error_404(e):

@@ -1,37 +1,81 @@
 {% extends "layout.html" %}
-    {% block content %}
-    <h1>Espace d'écriture</h1>
-    <div class="part">
-        <h2>Sélection de la fic</h2>
-        {#La sélection de la fic#}
-        <label for="fic_select">Fic à éditer : </label>
-        <select name="fic_select" id="fic_select" onchange="fic_editor.fic_select_onchange()"></select>
-        <button>Écrire une nouvelle fic</button>
-    </div>
+{% block content %}
+<h1>Espace d'écriture</h1>
+<div class="part">
+  <h2>Sélection de la fic</h2>
+  {#La sélection de la fic#}
+  <label for="fic_select">Fic à éditer : </label>
+  <select name="fic_select" id="fic_select" onchange="fic_editor.fic_select_onchange()"></select>
+  <button>Écrire une nouvelle fic</button>
+</div>
 
-    <div class="part">
-        <h2>Personalisation de la fic</h2>
-        <label for="perso_colab_select">Collaborateurs : </label>
-        <select name="perso_colab_select" id="perso_colab_select"></select>
-        <button onclick="fic_editor.add_collaborateurs()">+</button>
-        <button onclick="fic_editor.remove_collaborateurs()">-</button>
-        {#La personalisation de la fic#}
-    </div>
-    <div class="part">
-        <h2>Sélection du chapitre</h2>
-        <label for="chap_select">Chapitre : </label>
-        <select name="chap_select" id="chap_select"></select>
-        <button>+</button>
-        {#La sélection du chapitre#}
-    </div>
+<div class="part">
+  <h2>Personalisation de la fic</h2>
+  <label for="perso_colab_select">Collaborateurs : </label>
+  <select name="perso_colab_select" id="perso_colab_select"></select>
+  <button onclick="fic_editor.add_collaborateurs()">+</button>
+  <button onclick="fic_editor.remove_collaborateurs()">-</button>
+  <hr>
+  {#La personalisation de la fic#}
+  <div>
+    <label for="perso_fic_titre">Titre de la fic : </label><input type="text" name="perso_fic_titre"
+      id="perso_fic_titre">
+    <label for="perso_fic_status">Status : </label><select name="perso_fic_status" id="perso_fic_status">
+      {% for i in status %}
+      <option value="{{i}}">{{status[i]}}</option>
+      {% endfor %}
+    </select>
 
-    <div class="part">
-        <h2>Contenue du chapitre</h2>
-        {#L'écriture du chapitre#}
-        {#TODO: mettre le truc quill#}
-        <button>Enregistrer</button>
-    </div>
+    <label for="perso_fic_lien">Lien de la fic : </label><input type="text" name="perso_fic_lien"
+      id="perso_fic_lien">
+
+    {#Le bordel pour choisir les tags#}
+    {#<select id="perso_fic_tags" multiple>#}
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+      <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+      <select id="perso_fic_tags" multiple>
+        {% for i in genres %}
+        <option value="{{i}}">{{genres[i]}}</option>
+        {% endfor %}
+      </select>
+
+      <script>
+        var choices = null
+        document.addEventListener('DOMContentLoaded', function () {
+          const element = document.getElementById('perso_fic_tags');
+          choices = new Choices(element, {
+            removeItemButton: true, // Pour permettre à l'utilisateur de retirer des choix
+            searchEnabled: true,    // Pour permettre de rechercher dans les options
+            placeholder: true,
+            placeholderValue: 'Les tags de la fic', // Message de placeholder
+          });
+        });
+      </script>
 
 
-    <script src="/static/edit_fics.js"></script>
+      <br />
+      <label for="perso_fic_description">Description : </label><textarea id="perso_fic_description"
+        name="perso_fic_description" rows="5" cols="33"></textarea>
+
+        <br>
+        <button onclick="fic_editor.save_personalisation()">Enregistrer</button>
+  </div>
+</div>
+<div class="part">
+  <h2>Sélection du chapitre</h2>
+  <label for="chap_select">Chapitre : </label>
+  <select name="chap_select" id="chap_select"></select>
+  <button>+</button>
+  {#La sélection du chapitre#}
+</div>
+
+<div class="part">
+  <h2>Contenue du chapitre</h2>
+  {#L'écriture du chapitre#}
+  {#TODO: mettre le truc quill#}
+  <button>Enregistrer</button>
+</div>
+
+
+<script src="/static/edit_fics.js"></script>
 {% endblock %}
