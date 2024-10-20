@@ -130,9 +130,36 @@ def replace_img_tags(html_content):
 
     return replaced_content
 
-def convert_to_custom_tags(text):
+def convert_to_custom_tags(text, reverse=False):
     # Convertir les balises [i], [/i], [c], [/c], [b], [/b] en balises HTML
+    tags = {
+        "<strong>": "[b]",
+        "</strong>": "[/b]",
+        "<em>": "[i]",
+        "</em>": "[/i]",
+        "<u>": "[u]",
+        "</u>": "[/u]",
+    }
     
+    if not reverse:
+        #De HTML vers balises normales
+        for i in tags.keys():
+            text = text.replace(i, tags[i])
+        text = replace_html_tags(text, '<p class="ql-align-center">', '</p>', '[c]', '[/c]')
+        text = replace_html_tags(text, '<p class="ql-align-right">', '</p>', '[r]', '[/r]')
+        #Les img
+        text = replace_img_tags(text)
+    else:
+        for i in tags.keys():
+            text = text.replace(tags[i], i)
+        text = replace_html_tags(text, '[c]', '[/c]', '<p class="ql-align-center">', '</p>')
+        text = replace_html_tags(text, '[r]', '[/r]', '<p class="ql-align-right">', '</p>')
+        #L'inverse de replace_img_tags
+        pattern = re.compile(r'\[img\]([^\]]+)\[/img\]', re.IGNORECASE)
+        # Remplacez les balises [img]...[/img] par <img src="...">
+        text = pattern.sub(r'<img src="\1">', text)
+    
+    """
     text = text.replace("<strong>", "[b]")
     text = text.replace("</strong>", "[/b]")
     
@@ -140,16 +167,12 @@ def convert_to_custom_tags(text):
     text = text.replace("</em>", "[/i]")
     
     text = text.replace("<u>", "[u]")
-    text = text.replace("</u>", "[/u]")
+    text = text.replace("</u>", "[/u]")"""
     
-    text = replace_html_tags(text, '<p class="ql-align-center">', '</p>', '[c]', '[/c]')
-    text = replace_html_tags(text, '<p class="ql-align-right">', '</p>', '[r]', '[/r]')
     
-    #Les img
-    text = replace_img_tags(text)
-    return text
-
-
+    
+    
+    return text    
 
 def formatEntrée(content): #Prend un texte en entrée et le rend propre pour la BDD
     #Ici on remplace les balises
@@ -161,4 +184,10 @@ def formatEntrée(content): #Prend un texte en entrée et le rend propre pour la
 
 def desinfecter(content):
     content = bleach.clean(content, tags=[], attributes={}, strip=True)
+    return content
+
+def formatPourEspaceEcriture(content): #En gros cette fonction elle vas permettre de prendre un texte de la BDD et de l'envoyer dans le quill
+    #Pas besoin de convertir les liens youtubes
+    #Pas besoin de convertir les emots elles sont déjà de base dans le truc normalement
+    content = convert_to_custom_tags(content, True)
     return content

@@ -80,6 +80,18 @@ class Fic_editor {
             if(element["type"] == "current") {this.collaborateurs_current = element["id"]}
             else if(element["type"] == "proprio") {this.collaborateurs_proprio = element["id"]}
         });
+
+        //On met à jour le bordel pour l'auteur des chapitres
+        let select_auteur_chap = document.getElementById("content_auteur")
+        let ancienne_val = select_auteur_chap.value
+
+        select_clean(select_auteur_chap)
+        collaborateurs.forEach(element => {
+            select_add_element(select_auteur_chap, element["id"], element["name"])
+        });
+        if(ancienne_val >= 1) {
+            select_auteur_chap.value = ancienne_val;
+        }
     }
 
     async add_collaborateurs() {
@@ -139,6 +151,16 @@ class Fic_editor {
         document.getElementById("perso_fic_lien").value = val["lien"]
         choices.setChoiceByValue(val["tags"]);
         document.getElementById("perso_fic_description").value = val["description"]
+
+        //Maintenant on s'occuppe du truc des chapitres
+        let select = document.getElementById("chap_select")
+        select_clean(select)
+        select_add_element(select, -1, "----")
+        //Maintenant on ajoute
+        for(let i = 1; i <= val["nbchapitres"]; i++) {
+            select_add_element(select, i, i)
+        }
+        select_add_element(select, 0, (val["nbchapitres"]+1) + " (+)")
     }
 
     async save_personalisation() {
@@ -154,8 +176,58 @@ class Fic_editor {
         await fetch_val("personalisation_set", {"fic" : fic, "val": JSON.stringify(valeur)}, "TEXT")
     }
 
+    async get_chapitre() {
+        let fic = document.getElementById("fic_select").value
+        let chapitre = document.getElementById("chap_select").value
+        console.log(chapitre)
+
+        if(chapitre == 0) {
+            //Nouveau chapitre
+            this.isNouveauChapitre = true;
+            //TODO: Tout netoyer
+            document.getElementById("content_titre").value = ""
+            quill.root.innerHTML = ""
+            document.getElementById("content_auteur").value = USERID
+
+        } else if(chapitre == -1) {
+            //Rien
+            this.isNouveauChapitre = false;
+            this.cacheur(50) //TODO: La valeur elle est pas bonne hein
+        } else {
+            this.isNouveauChapitre = false;
+            //C'est un chapitre existant, on fetch sur le serveur
+            let val = await fetch_val("chapitre_get", {"fic" : fic, "chapitre": chapitre})
+            console.log(val)
+            document.getElementById("content_titre").value = val["titre"]
+            quill.root.innerHTML = val["content"]
+            document.getElementById("content_auteur").value = val["auteur"]
+        }
+    }
+
+    async save_chapitre() {
+        //On regarde si on est sur un nouveau truc ou pas
+        let fic = document.getElementById("fic_select").value
+        let chapitre = document.getElementById("chap_select").value
+        let titre = document.getElementById("content_titre").value
+        let auteur = document.getElementById("content_auteur").value
+        let content = quill.root.innerHTML
+
+        if(chapitre > 0) {
+            //On enregistre
+            let val = await fetch_val("chapitre_save", {"fic" : fic, "chapitre": chapitre, "titre": titre, "auteur": auteur, "content": content}, "text")
+            console.log(val)
+            if(val == "OK") {alert("Le chapitre a bien été sauvegardé.")}
+        } else if (chapitre == 0) {
+            //On crée un nouveau chapitre
+            let val = await fetch_val("chapitre_create", {"fic" : fic, "chapitre": chapitre, "titre": titre, "auteur": auteur, "content": content}, "text")
+            //TODO: Faire la requête
+            //TODO: enregistrer le numéro de chapitre, trouver un moyen d'avoir l'auteur en direct
+        }
+        
+    }
+
     cacheur(val) {
-        //Cette fonction a pour but de cacher les élements si la partie a pas encore été chargé
+        //Cette fonction a pour but de cacher les élements si la partie n'a pas encore été chargé
     }
 }
 

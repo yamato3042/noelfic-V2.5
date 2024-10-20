@@ -204,6 +204,10 @@ def personalisation_get():
     cursor.execute("SELECT tag FROM tags WHERE fic = 2447")
     for i in cursor.fetchall():
         ret["tags"].append(str(i[0]))
+        
+    #On récupère le bordel des chapitres
+    cursor.execute("SELECT COALESCE(MAX(num), 0) FROM chapitres WHERE fic = %s", (fic,))
+    ret["nbchapitres"] = cursor.fetchone()[0]
     
     util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
@@ -232,7 +236,7 @@ def personalisation_set():
     titre = util.formateur.desinfecter(val["titre"])
     status = int(val["status"])
     lien = util.formateur.desinfecter(val["lien"])
-    description = util.formateur.desinfecter(val["description"])
+    description = util.formateur.formatEntrée(val["description"])
     #TODO: faire la requête pour changer les trucs, et aussi les tags là
     cursor.execute("UPDATE fics SET titre = %s, status = %s, lien = %s, description = %s WHERE id = %s", (titre, status, lien, description, fic,))
     
@@ -243,6 +247,70 @@ def personalisation_set():
     for i in val["tags"]:
         cursor.execute("INSERT INTO tags VALUES (%s,%s)", (fic, int(i)))
     
+    conn.commit()
+    
+    util.bdd.releaseConnexion(conn)
+    return "OK"
+
+
+def chapitre_get():
+    util.ajax_util.checkFormsVal(["token", "fic", "chapitre"])
+        
+    fic = int(request.form["fic"])
+    chapitre = int(request.form["chapitre"])
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        util.bdd.releaseConnexion(conn)
+        return "ERR"
+    
+    #On vérifie que l'user soit bien collaborateur
+    cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
+    if len(cursor.fetchall()) != 1:
+        util.bdd.releaseConnexion(conn)
+        return "ERRUSR"
+    
+    #On récupère les trucs
+    cursor.execute("SELECT titre, auteur, content FROM chapitres WHERE fic = %s AND num = %s", (fic, chapitre))
+    val = cursor.fetchone()
+    
+    ret = {
+        "titre": val[0],
+        "auteur": val[1],
+        "content": util.formateur.formatPourEspaceEcriture(val[2]) #TODO: Y'a des trucs qui marchent pas côté quill faut regarder ça
+    }
+    
+    util.bdd.releaseConnexion(conn)
+    return json.dumps(ret)
+
+def chapitre_save():
+    util.ajax_util.checkFormsVal(["token", "fic", "chapitre", "titre", "auteur", "content"])
+        
+    fic = int(request.form["fic"])
+    chapitre = int(request.form["chapitre"])
+    titre = request.form["titre"]
+    auteur = int(request.form["auteur"])
+    content = util.formateur.formatEntrée(request.form["content"])
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        util.bdd.releaseConnexion(conn)
+        return "ERR"
+    
+    #On vérifie que l'user soit bien collaborateur
+    cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
+    if len(cursor.fetchall()) != 1:
+        util.bdd.releaseConnexion(conn)
+        return "ERRUSR"
+    
+    #On change les valeurs
+    cursor.execute("UPDATE chapitres SET titre = %s, auteur = %s, content = %s, modification = NOW() WHERE fic = %s AND num = %s", (titre, auteur, content, fic, chapitre))
     conn.commit()
     
     util.bdd.releaseConnexion(conn)
