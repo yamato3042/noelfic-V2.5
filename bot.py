@@ -36,6 +36,19 @@ def clean_tokens(cursor: psycopg2.extensions.cursor):
     print("Nettoyage des tokens utilisateurs")
     cursor.execute("DELETE FROM users_token WHERE lastconn < NOW() - INTERVAL '6 months';")
     
+def update_collaboratif(cursor: psycopg2.extensions.cursor):
+    print("Mise à jour des fics collaboratives")
+    cursor.execute("""SELECT id_fics, COUNT(id_users) 
+            FROM collaborateur 
+            GROUP BY id_fics HAVING COUNT(id_users) > 1""")
+    val = cursor.fetchall()
+    
+    fics_id = []
+    for i in val:
+        fics_id.append(i[0])
+    
+    cursor.execute("UPDATE fics SET collaboratif = false; UPDATE fics SET collaboratif = true WHERE id IN %s;", (tuple(fics_id),))
+
 debut = time.perf_counter()
 date_début = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 f = open("bot.log", "a")
@@ -52,6 +65,7 @@ cursor = conn.cursor()
 updateNotes(cursor)
 clean_tokens(cursor)
 clean_shorts_tokens(cursor)
+update_collaboratif(cursor)
 
 conn.commit()
 conn.close()
