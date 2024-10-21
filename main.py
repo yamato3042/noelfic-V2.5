@@ -70,6 +70,7 @@ app.add_url_rule("/comptes/edit_fics/personalisation_set", view_func=accounts.ed
 app.add_url_rule("/comptes/edit_fics/chapitre_get", view_func=accounts.edit_fic.chapitre_get, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/chapitre_save", view_func=accounts.edit_fic.chapitre_save, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/chapitre_create", view_func=accounts.edit_fic.chapitre_create, methods=["POST"])
+app.add_url_rule("/comptes/edit_fics/fic_create", view_func=accounts.edit_fic.fic_create, methods=["POST"])
 
 @app.errorhandler(404)
 def error_404(e):

@@ -6,29 +6,31 @@
   {#La sélection de la fic#}
   <label for="fic_select">Fic à éditer : </label>
   <select name="fic_select" id="fic_select" onchange="fic_editor.fic_select_onchange()"></select>
-  <button>Écrire une nouvelle fic</button>
+  <button onclick="fic_editor.fic_select_new()">Écrire une nouvelle fic</button>
 </div>
 
-<div class="part">
+<div class="part" id="part_perso_fic">
   <h2>Personalisation de la fic</h2>
-  <label for="perso_colab_select">Collaborateurs : </label>
-  <select name="perso_colab_select" id="perso_colab_select"></select>
-  <button onclick="fic_editor.add_collaborateurs()">+</button>
-  <button onclick="fic_editor.remove_collaborateurs()">-</button>
+  <div>
+    <label for="perso_colab_select">Collaborateurs : </label>
+    <select name="perso_colab_select" id="perso_colab_select"></select>
+    <button onclick="fic_editor.add_collaborateurs()">+</button>
+    <button onclick="fic_editor.remove_collaborateurs()">-</button>
+  </div>
   <hr>
   {#La personalisation de la fic#}
-  <div>
-    <label for="perso_fic_titre">Titre de la fic : </label><input type="text" name="perso_fic_titre"
-      id="perso_fic_titre">
-    <label for="perso_fic_status">Status : </label><select name="perso_fic_status" id="perso_fic_status">
+    <div><label for="perso_fic_titre">Titre de la fic : </label><input type="text" name="perso_fic_titre"
+      id="perso_fic_titre"></div>
+      <div><label for="perso_fic_status">Status : </label><select name="perso_fic_status" id="perso_fic_status">
       {% for i in status %}
       <option value="{{i}}">{{status[i]}}</option>
       {% endfor %}
-    </select>
-
+    </select></div>
+  <div>
     <label for="perso_fic_lien">Lien de la fic : </label><input type="text" name="perso_fic_lien"
-      id="perso_fic_lien">
+      id="perso_fic_lien"></div>
 
+      <div>
     {#Le bordel pour choisir les tags#}
     {#<select id="perso_fic_tags" multiple>#}
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -51,17 +53,14 @@
           });
         });
       </script>
-
-
-      <br />
+</div>
+<div>
       <label for="perso_fic_description">Description : </label><textarea id="perso_fic_description"
         name="perso_fic_description" rows="5" cols="33"></textarea>
-
-        <br>
-        <button onclick="fic_editor.save_personalisation()">Enregistrer</button>
-  </div>
 </div>
-<div class="part">
+        <div><button onclick="fic_editor.save_personalisation()">Enregistrer</button></div>
+</div>
+<div class="part" id="part_chapitre_select">
   <h2>Sélection du chapitre</h2>
   <label for="chap_select">Chapitre : </label>
   <select name="chap_select" id="chap_select" onchange="fic_editor.get_chapitre()"></select>
@@ -69,7 +68,7 @@
   {#La sélection du chapitre#}
 </div>
 
-<div class="part">
+<div class="part" id ="part_chapitre_content">
   <h2>Contenue du chapitre</h2>
 
   <label for="content_titre">Titre du chapitre : </label><input type="text" name="content_titre"
@@ -91,4 +90,5 @@
 
 <script>const USERID = parseInt("{{session.id}}")</script>
 <script src="/static/edit_fics.js"></script>
+<script>fic_editor.cacheur(1)</script>
 {% endblock %}

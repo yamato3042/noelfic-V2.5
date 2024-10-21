@@ -64,7 +64,7 @@ def getcolaborateurs():
     #On récupère l'auteur de la fic (on peux pas l'enlever donc faut le préciser)
     cursor.execute("""SELECT users.id FROM fics 
                     LEFT JOIN users ON users.id = fics.auteur
-                    WHERE fics.id = 2447""", (fic,))
+                    WHERE fics.id = %s""", (fic,))
     proprio = cursor.fetchone()[0]
     #On récupère la liste des collaborateurs
     cursor.execute("""SELECT id, pseudo FROM collaborateur 
@@ -201,7 +201,7 @@ def personalisation_get():
     }
     
     #On récupère les tags
-    cursor.execute("SELECT tag FROM tags WHERE fic = 2447")
+    cursor.execute("SELECT tag FROM tags WHERE fic = %s", (fic,))
     for i in cursor.fetchall():
         ret["tags"].append(str(i[0]))
         
@@ -311,8 +311,12 @@ def chapitre_save():
     
     #On change les valeurs
     cursor.execute("UPDATE chapitres SET titre = %s, auteur = %s, content = %s, modification = NOW() WHERE fic = %s AND num = %s", (titre, auteur, content, fic, chapitre))
-    conn.commit()
     
+    #On met à jour la fic et le chapitre au niveau date de modif
+    cursor.execute("UPDATE fics SET modification = NOW() WHERE id = %s", (fic,))
+    cursor.execute("UPDATE chapitres SET modification=NOW() where fic = %s AND num = %s", (fic, chapitre,))
+    
+    conn.commit()
     util.bdd.releaseConnexion(conn)
     return "OK"
 
@@ -340,8 +344,8 @@ def chapitre_create():
     
     #On crée un nouveau chapitre et on return le num
     cursor.execute("""INSERT INTO chapitres (fic, titre, num, auteur, content, creation, modification, vues)
-                VALUES (%s, %s, (SELECT MAX(num)+1 from chapitres WHERE fic = 2447), %s, %s, NOW(), NOW(), 0)
-                RETURNING num""", (fic, titre, auteur, content))
+                VALUES (%s, %s, (SELECT COALESCE(MAX(num), 0)+1 from chapitres WHERE fic = %s), %s, %s, NOW(), NOW(), 0)
+                RETURNING num""", (fic, titre, fic, auteur, content))
     num = cursor.fetchone()[0]
     conn.commit()
     
@@ -349,3 +353,39 @@ def chapitre_create():
     
     util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
+
+
+def fic_create():
+    util.ajax_util.checkFormsVal(["token", "title"])
+        
+    titre = request.form["title"].strip()
+    
+    if(titre == ""): 
+        return "ERR"
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        util.bdd.releaseConnexion(conn)
+        return "ERR"
+    
+    #On vérifie que le titre ne soit pas déjà pris
+    cursor.execute("SELECT id from fics WHERE titre ILIKE %s", (titre,))
+    if len(cursor.fetchall()) > 0:
+        util.bdd.releaseConnexion(conn)
+        return "ERR_ALREADY_EXIST"
+    
+    #On crée la fic
+    cursor.execute("INSERT INTO fics (titre, status, creation, modification, auteur) VALUES (%s, 1, NOW(), NOW(), %s) RETURNING id", (titre, userId,))
+    fic_id = cursor.fetchone()[0] #Normalement on a un id qu'on peux retourner dcp
+    
+    #On ajoute l'utilisateur en collaborateur
+    cursor.execute("INSERT INTO collaborateur VALUES (%s, %s)", (fic_id, userId))
+    
+    
+    
+    conn.commit()
+    util.bdd.releaseConnexion(conn)
+    return str(fic_id)

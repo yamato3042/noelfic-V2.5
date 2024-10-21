@@ -10,7 +10,7 @@ function select_clean(select) {
     //Cette fonction vas en gros nettoyer un select
     select.innerHTML = ""
 }
-async function fetch_val(adress, param = {}, retType="json") {
+async function fetch_val(adress, param = {}, retType = "json") {
     //Cette fonction vas fetch sur le serveur un JSON
     const formData = new FormData();
     formData.append("token", temp_token);
@@ -26,10 +26,10 @@ async function fetch_val(adress, param = {}, retType="json") {
         body: formData,
     })
 
-    if(retType=="json") {
+    if (retType == "json") {
         return await response.json()
     }
-    else if(retType=="text") {
+    else if (retType == "text") {
         return await response.text()
     }
 
@@ -58,18 +58,37 @@ class Fic_editor {
     }
 
     fic_select_onchange() {
-        //Lorsque l'élement courant de fic_select change
-        console.log("fic select change")
-        this.get_collaborateurs()
-        this.get_personalisation()
+        if (document.getElementById("fic_select").value == '-1') {
+            this.cacheur(1)
+        } else {
+            //Lorsque l'élement courant de fic_select change
+            console.log("fic select change")
+            this.get_collaborateurs()
+            this.get_personalisation()
+            this.cacheur(2)
+        }
     }
-    fic_select_new() {
+    async fic_select_new() {
         //Permet de créer une nouvelle fic
+        let ficname = prompt("Veuillez choisir un titre pour cette nouvelle fic")
+        if (ficname != "") {
+            //On fait la requête
+            let val = await fetch_val("fic_create", { "title": ficname }, "text");
+            console.log(val)
+            if (val == "ERR_ALREADY_EXIST") {
+                alert("La fic existe déjà")
+            } else if (parseInt(val) != NaN) {
+                alert("La fic a été créé avec succès")
+                await this.fic_select_fetch()
+                document.getElementById("fic_select").value = val
+                this.fic_select_onchange()
+            }
+        }
     }
 
     async get_collaborateurs() {
         let fic = document.getElementById("fic_select").value
-        let collaborateurs = await fetch_val("collaborateur_select", {"fic" : fic});
+        let collaborateurs = await fetch_val("collaborateur_select", { "fic": fic });
         //On affiche les valeurs
         let select = document.getElementById("perso_colab_select")
         select_clean(select)
@@ -77,8 +96,8 @@ class Fic_editor {
 
         collaborateurs.forEach(element => {
             select_add_element(select, element["id"], element["name"])
-            if(element["type"] == "current") {this.collaborateurs_current = element["id"]}
-            else if(element["type"] == "proprio") {this.collaborateurs_proprio = element["id"]}
+            if (element["type"] == "current") { this.collaborateurs_current = element["id"] }
+            else if (element["type"] == "proprio") { this.collaborateurs_proprio = element["id"] }
         });
 
         //On met à jour le bordel pour l'auteur des chapitres
@@ -89,7 +108,7 @@ class Fic_editor {
         collaborateurs.forEach(element => {
             select_add_element(select_auteur_chap, element["id"], element["name"])
         });
-        if(ancienne_val >= 1) {
+        if (ancienne_val >= 1) {
             select_auteur_chap.value = ancienne_val;
         }
     }
@@ -103,14 +122,14 @@ class Fic_editor {
         }
         //On fait la requête
         let fic = document.getElementById("fic_select").value
-        let ret = await fetch_val("collaborateur_add", {"fic" : fic, "user": username}, "text");
+        let ret = await fetch_val("collaborateur_add", { "fic": fic, "user": username }, "text");
 
-        if(ret == "OK") {
+        if (ret == "OK") {
             this.get_collaborateurs()
-        } else if(ret == "ERR_INVALID_USER") {
+        } else if (ret == "ERR_INVALID_USER") {
             alert("Utilisateur invalide.")
 
-        } else if(ret == "ERR_ALREADY_USER") {
+        } else if (ret == "ERR_ALREADY_USER") {
             alert("L'utilisateur est déjà là.")
         } else {
             alert("Erreur")
@@ -121,17 +140,17 @@ class Fic_editor {
         //On est pas censé pour s'enlever ou enlever le proprio de la fic
         let select = document.getElementById("perso_colab_select")
 
-        if(select.value == this.collaborateurs_proprio || select.value == this.collaborateurs_current) {
+        if (select.value == this.collaborateurs_proprio || select.value == this.collaborateurs_current) {
             alert("Action impossible")
             return
         }
 
         let fic = document.getElementById("fic_select").value
 
-        let ret = await fetch_val("collaborateur_delete", {"fic" : fic, "toremove": select.value}, "text");
+        let ret = await fetch_val("collaborateur_delete", { "fic": fic, "toremove": select.value }, "text");
         console.log(ret)
 
-        if(ret == "OK") {
+        if (ret == "OK") {
             this.get_collaborateurs()
         } else {
             alert("Erreur")
@@ -142,13 +161,14 @@ class Fic_editor {
 
     async get_personalisation() {
         let fic = document.getElementById("fic_select").value
-        let val = await fetch_val("personalisation_get", {"fic" : fic})
+        let val = await fetch_val("personalisation_get", { "fic": fic })
 
         console.log(val)
 
         document.getElementById("perso_fic_titre").value = val["titre"]
         document.getElementById("perso_fic_status").value = val["status"]
         document.getElementById("perso_fic_lien").value = val["lien"]
+        choices.removeActiveItems()
         choices.setChoiceByValue(val["tags"]);
         document.getElementById("perso_fic_description").value = val["description"]
 
@@ -157,10 +177,10 @@ class Fic_editor {
         select_clean(select)
         select_add_element(select, -1, "----")
         //Maintenant on ajoute
-        for(let i = 1; i <= val["nbchapitres"]; i++) {
+        for (let i = 1; i <= val["nbchapitres"]; i++) {
             select_add_element(select, i, i)
         }
-        select_add_element(select, 0, (val["nbchapitres"]+1) + " (+)")
+        select_add_element(select, 0, (val["nbchapitres"] + 1) + " (+)")
     }
 
     async save_personalisation() {
@@ -173,7 +193,7 @@ class Fic_editor {
             "tags": choices.getValue(true),
             "description": document.getElementById("perso_fic_description").value
         }
-        await fetch_val("personalisation_set", {"fic" : fic, "val": JSON.stringify(valeur)}, "TEXT")
+        await fetch_val("personalisation_set", { "fic": fic, "val": JSON.stringify(valeur) }, "TEXT")
     }
 
     async get_chapitre() {
@@ -181,7 +201,7 @@ class Fic_editor {
         let chapitre = document.getElementById("chap_select").value
         console.log(chapitre)
 
-        if(chapitre == 0) {
+        if (chapitre == 0) {
             //Nouveau chapitre
             this.isNouveauChapitre = true;
             //Tout netoyer
@@ -189,18 +209,21 @@ class Fic_editor {
             quill.root.innerHTML = ""
             document.getElementById("content_auteur").value = USERID
 
-        } else if(chapitre == -1) {
+            this.cacheur(3)
+
+        } else if (chapitre == -1) {
             //Rien
             this.isNouveauChapitre = false;
-            this.cacheur(50) //TODO: La valeur elle est pas bonne hein
+            this.cacheur(2) //TODO: La valeur elle est pas bonne hein
         } else {
             this.isNouveauChapitre = false;
             //C'est un chapitre existant, on fetch sur le serveur
-            let val = await fetch_val("chapitre_get", {"fic" : fic, "chapitre": chapitre})
+            let val = await fetch_val("chapitre_get", { "fic": fic, "chapitre": chapitre })
             console.log(val)
             document.getElementById("content_titre").value = val["titre"]
             quill.root.innerHTML = val["content"]
             document.getElementById("content_auteur").value = val["auteur"]
+            this.cacheur(3)
         }
     }
 
@@ -212,14 +235,14 @@ class Fic_editor {
         let auteur = document.getElementById("content_auteur").value
         let content = quill.root.innerHTML
 
-        if(chapitre > 0) {
+        if (chapitre > 0) {
             //On enregistre
-            let val = await fetch_val("chapitre_save", {"fic" : fic, "chapitre": chapitre, "titre": titre, "auteur": auteur, "content": content}, "text")
+            let val = await fetch_val("chapitre_save", { "fic": fic, "chapitre": chapitre, "titre": titre, "auteur": auteur, "content": content }, "text")
             console.log(val)
-            if(val == "OK") {alert("Le chapitre a bien été sauvegardé.")}
+            if (val == "OK") { alert("Le chapitre a bien été sauvegardé.") }
         } else if (chapitre == 0) {
             //On crée un nouveau chapitre
-            let val = await fetch_val("chapitre_create", {"fic" : fic, "titre": titre, "auteur": auteur, "content": content}, "json")
+            let val = await fetch_val("chapitre_create", { "fic": fic, "titre": titre, "auteur": auteur, "content": content }, "json")
             console.log(val)
 
             //On recharge et on met au bon numéro de chapitre
@@ -227,11 +250,34 @@ class Fic_editor {
             document.getElementById("chap_select").value = val["num"]
             this.get_chapitre()
         }
-        
+
     }
 
     cacheur(val) {
+        let part_chapitre_select = document.getElementById("part_chapitre_select")
+        let part_chapitre_content = document.getElementById("part_chapitre_content")
+        let part_perso_fic = document.getElementById("part_perso_fic")
+        console.log("cacheur : ", val)
         //Cette fonction a pour but de cacher les élements si la partie n'a pas encore été chargé
+        /*L'affichage se fait en 4 étapes : 
+            1 - Aucune fic n'a été sélectionné
+            2 - Une fic a été sélectionné
+            3 - Un chapitre a été sélectionné
+        */
+
+        part_chapitre_select.style.visibility = 'hidden'
+        part_chapitre_content.style.visibility = 'hidden'
+        part_perso_fic.style.visibility = 'hidden'
+
+        if (val >= 2) {
+            part_chapitre_select.style.visibility = 'visible'
+            part_perso_fic.style.visibility = 'visible'
+        }
+
+        if (val == 3) {
+            part_chapitre_content.style.visibility = 'visible'
+        }
+
     }
 }
 
