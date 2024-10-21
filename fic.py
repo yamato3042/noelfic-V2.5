@@ -28,6 +28,9 @@ def fic(fic_, chapitre_):
     #On chope la liste des chapitres de la fic
     cursor.execute("SELECT COUNT(*) FROM chapitres WHERE fic = %s", (fic,))
     nbChapitres = cursor.fetchall()[0][0]
+    
+    if chapitre > nbChapitres:
+        abort(404)
 
     #On génère la liste des pages pour le curseur
     listChapitres = util.classements.gen_liste_pages(chapitre, nbChapitres)
