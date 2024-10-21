@@ -315,3 +315,37 @@ def chapitre_save():
     
     util.bdd.releaseConnexion(conn)
     return "OK"
+
+def chapitre_create():
+    util.ajax_util.checkFormsVal(["token", "fic", "titre", "auteur", "content"])
+        
+    fic = int(request.form["fic"])
+    titre = request.form["titre"]
+    auteur = int(request.form["auteur"])
+    content = util.formateur.formatEntrée(request.form["content"])
+    
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    #On récup le token
+    userId = getUserIdFromTempToken(cursor, request.form["token"]);
+    if userId == None:
+        util.bdd.releaseConnexion(conn)
+        return "ERR"
+    
+    #On vérifie que l'user soit bien collaborateur
+    cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
+    if len(cursor.fetchall()) != 1:
+        util.bdd.releaseConnexion(conn)
+        return "ERRUSR"
+    
+    #On crée un nouveau chapitre et on return le num
+    cursor.execute("""INSERT INTO chapitres (fic, titre, num, auteur, content, creation, modification, vues)
+                VALUES (%s, %s, (SELECT MAX(num)+1 from chapitres WHERE fic = 2447), %s, %s, NOW(), NOW(), 0)
+                RETURNING num""", (fic, titre, auteur, content))
+    num = cursor.fetchone()[0]
+    conn.commit()
+    
+    ret = {"num": num}
+    
+    util.bdd.releaseConnexion(conn)
+    return json.dumps(ret)

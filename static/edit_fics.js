@@ -184,7 +184,7 @@ class Fic_editor {
         if(chapitre == 0) {
             //Nouveau chapitre
             this.isNouveauChapitre = true;
-            //TODO: Tout netoyer
+            //Tout netoyer
             document.getElementById("content_titre").value = ""
             quill.root.innerHTML = ""
             document.getElementById("content_auteur").value = USERID
@@ -219,9 +219,13 @@ class Fic_editor {
             if(val == "OK") {alert("Le chapitre a bien été sauvegardé.")}
         } else if (chapitre == 0) {
             //On crée un nouveau chapitre
-            let val = await fetch_val("chapitre_create", {"fic" : fic, "chapitre": chapitre, "titre": titre, "auteur": auteur, "content": content}, "text")
-            //TODO: Faire la requête
-            //TODO: enregistrer le numéro de chapitre, trouver un moyen d'avoir l'auteur en direct
+            let val = await fetch_val("chapitre_create", {"fic" : fic, "titre": titre, "auteur": auteur, "content": content}, "json")
+            console.log(val)
+
+            //On recharge et on met au bon numéro de chapitre
+            await this.get_personalisation()
+            document.getElementById("chap_select").value = val["num"]
+            this.get_chapitre()
         }
         
     }
