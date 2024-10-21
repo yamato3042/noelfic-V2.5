@@ -98,7 +98,7 @@ def fic(fic_, chapitre_):
     commentaires = []
     for i in commentaires_raw:
         cur = {
-            "date": i[0],
+            "date": util.general.convDate(i[0]),
             "content": util.formateur.formater(i[1]),
             "avatar": util.general.getAvatar(i[3], i[2]),
             "pseudo": i[3],
