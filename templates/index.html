@@ -11,6 +11,10 @@
         <p style="color: green; text-align: center; font-size: 1.2em;">
             Bon retour parmis nous ! <img src="/static/img/noel.gif" alt=":noel:">/
         </p>
+        {% elif request.args.get("msg") == "3" %}
+        <p style="color: green; text-align: center; font-size: 1.2em;">
+            Votre mot de passe a été changé avec succès, vous pouvez désormais vous connecter
+        </p>
         {% endif %}
     {% endif %}
 

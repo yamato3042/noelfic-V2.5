@@ -22,6 +22,7 @@ import accounts.modif_profil
 import accounts.logout
 import accounts.ajax
 import accounts.edit_fic
+import accounts.mdp_oublie
 
 app.add_url_rule("/", view_func=index.index)
 app.add_url_rule("/actions/action_get_chat_messages", view_func=minichat.action_get_chat_messages)
@@ -71,6 +72,10 @@ app.add_url_rule("/comptes/edit_fics/chapitre_get", view_func=accounts.edit_fic.
 app.add_url_rule("/comptes/edit_fics/chapitre_save", view_func=accounts.edit_fic.chapitre_save, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/chapitre_create", view_func=accounts.edit_fic.chapitre_create, methods=["POST"])
 app.add_url_rule("/comptes/edit_fics/fic_create", view_func=accounts.edit_fic.fic_create, methods=["POST"])
+
+app.add_url_rule("/comptes/resetpass", view_func=accounts.mdp_oublie.resetpass, methods=["GET", "POST"])
+app.add_url_rule("/comptes/changepasseV1", view_func=accounts.mdp_oublie.migrepass, methods=["GET", "POST"])
+app.add_url_rule("/comptes/update_mdp", view_func=accounts.mdp_oublie.update_mdp, methods=["GET", "POST"])
 
 @app.errorhandler(404)
 def error_404(e):

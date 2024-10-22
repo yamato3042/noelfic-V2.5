@@ -50,6 +50,12 @@ def update_collaboratif(cursor: psycopg2.extensions.cursor):
     
     cursor.execute("UPDATE fics SET collaboratif = false; UPDATE fics SET collaboratif = true WHERE id IN %s;", (tuple(fics_id),))
 
+def clean_chg_mdp_tokens(cursor:psycopg2.extensions.cursor):
+    #On nettoie le bordel
+    print("Nettoyage des tokens de changement de mot de passe")
+    cursor.execute("DELETE FROM token_changement_mdp WHERE timestamp < NOW() - INTERVAL '2 day';")
+    
+    
 debut = time.perf_counter()
 date_début = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 f = open("bot.log", "a")
@@ -67,6 +73,7 @@ updateNotes(cursor)
 clean_tokens(cursor)
 clean_shorts_tokens(cursor)
 update_collaboratif(cursor)
+clean_chg_mdp_tokens(cursor)
 
 conn.commit()
 conn.close()

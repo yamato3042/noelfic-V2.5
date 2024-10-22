@@ -1,0 +1,43 @@
+{#C'est le même fichier pour les mdp oubliés ou les migrations de mdp car c'est le même bordel#}
+{% extends "layout.html" %}
+{% block content %}
+
+{% if migration == true %}
+{% set titre = "Migration de mot de passe"%}
+{% set submit = "Recevoir un email"%}
+{% elif update %}
+{% set titre = "Changement de mot de passe"%}
+{% set submit = "Changer de mot de passe"%}
+{% else %}
+{% set titre = "Mot de passe oublié"%}
+{% set submit = "Recevoir un email"%}
+{% endif %}
+
+{# le formulaire #}
+<form action="" method="post">
+  <h1>{{titre}}</h1>
+
+  {% if update %}
+  <table>
+    <tr></tr>
+    <td><label for="mdp">Nouveau mot de passe : </label></td>
+    <td><input type="password" name="mdp" id="mdp" required /></td>
+    </tr>
+  </table>
+  {% else %}
+  <table>
+    <tr>
+      <td><label for="email">Email : </label></td>
+      <td><input type="email" name="email" id="email" required /></td>
+    </tr>
+  </table>
+  {{captcha|safe}}
+  {% endif %}
+
+  <input class="button" type="submit" value="{{submit}}" />
+  {% if err %}
+  <p style="color: red;"">{{err}}</p>
+      {% endif%}
+    </form>
+
+{% endblock %}
