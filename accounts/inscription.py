@@ -6,6 +6,7 @@ import util.bdd
 from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
+import util.captcha
 
 def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
@@ -52,10 +53,13 @@ def createUser(pseudo: str, email : str, password : str):
 def page_inscription():
     err = None
     if request.method == "POST":
+        print(request.form)
         if "pseudo" in request.form and "email" in request.form and "password" in request.form:
             pseudo = request.form.get("pseudo")
             email = request.form.get("email")
             password = request.form.get("password")
+            captcha_ret = request.form.get("g-recaptcha-response")
+            
             ok = True
             if pseudo == "":
                 ok = False
@@ -66,7 +70,20 @@ def page_inscription():
             if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
                 ok = False
                 err = "Email invalide"
-            #TODO: le captcha
+            #Le captcha
+            if "g-recaptcha-response" not in request.form:
+                ok = False
+                err = "Captcha invalide"
+            elif request.form["g-recaptcha-response"] == "":
+                ok = False
+                err = "Captcha invalide"
+            else:
+                #On vérifie la valeur du captcha
+                if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+                    ok = False
+                    err = "Captcha invalide"
+                
+            
             if ok:
                 #On crée le compte
                 err = createUser(pseudo, email, password)
@@ -80,4 +97,6 @@ def page_inscription():
     conn = util.bdd.getConnexion()
     session = accounts.accounts.Session(conn)
     util.bdd.releaseConnexion(conn)
-    return render_template("accounts/inscription.html", err=err, customCSS="accounts.css", session=session)
+    
+    captcha = util.captcha.getCaptcha()
+    return render_template("accounts/inscription.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)

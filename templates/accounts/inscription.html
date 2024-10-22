@@ -19,6 +19,7 @@
           <td><input type="password" name="password" id="password" required /></td>
         </tr>
       </table>
+      {{captcha|safe}}
       <input class="button" type="submit" value="Inscription" />
       {% if err %}
       <p style="color: red;"">{{err}}</p>
