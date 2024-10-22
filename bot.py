@@ -3,6 +3,7 @@
 import psycopg2
 import datetime
 import time
+from param import BDD_DATABASE, BDD_HOST, BDD_USER, BDD_PASSWORD, BDD_PORT
 
 def updateNotes(cursor: psycopg2.extensions.cursor):
     #Récupère toutes les notes
@@ -55,11 +56,11 @@ f = open("bot.log", "a")
 f.write(f"[{date_début}] Starting job\n")
 f.close()
 
-conn = psycopg2.connect(database="noelfic",
-                        host="localhost",
-                        user="postgres",
-                        password="66pzyBi3V7S2Qv",
-                        port="5432")
+conn = psycopg2.connect(database=BDD_DATABASE,
+                        host=BDD_HOST,
+                        user=BDD_USER,
+                        password=BDD_PASSWORD,
+                        port=BDD_PORT)
 cursor = conn.cursor()
 
 updateNotes(cursor)
