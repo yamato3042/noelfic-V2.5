@@ -146,6 +146,7 @@ def ajax_modif_profil():
             return "ERRIMG"
         
         resized_image = image.resize((144, 144))
+        resized_image = resized_image.convert("RGB")
         #On récupère le pseudo
         cursor.execute("UPDATE users SET pp = true WHERE id = %s RETURNING pseudo", (userId,))
         val_pseudo = cursor.fetchone()
