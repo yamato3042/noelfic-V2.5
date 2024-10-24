@@ -15,7 +15,12 @@
         <p style="color: green; text-align: center; font-size: 1.2em;">
             Votre mot de passe a été changé avec succès, vous pouvez désormais vous connecter
         </p>
+        {% elif request.args.get("msg") == "4" %}
+        <p style="color: green; text-align: center; font-size: 1.2em;">
+            Votre compte a bien été validé, vous pouvez désormais vous connecter
+        </p>
         {% endif %}
+
     {% endif %}
 
     <h2><img src="/static/img/noel.gif" alt=":noel:"> Bienvenue <img src="/static/img/noel.gif" alt=":noel:"></h2>

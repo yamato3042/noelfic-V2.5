@@ -1,5 +1,5 @@
 #Ce fichier vas contenir la page et la requête post permettant de s'inscrire sur le site
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, abort
 import re 
 import accounts.accounts
 import util.bdd
@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
 import util.captcha
+from param import CHECK_CHAPTCHA
 
 def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
@@ -70,18 +71,19 @@ def page_inscription():
             if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
                 ok = False
                 err = "Email invalide"
-            #Le captcha
-            if "g-recaptcha-response" not in request.form:
-                ok = False
-                err = "Captcha invalide"
-            elif request.form["g-recaptcha-response"] == "":
-                ok = False
-                err = "Captcha invalide"
-            else:
-                #On vérifie la valeur du captcha
-                if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+            if CHECK_CHAPTCHA:
+                #Le captcha
+                if "g-recaptcha-response" not in request.form:
                     ok = False
                     err = "Captcha invalide"
+                elif request.form["g-recaptcha-response"] == "":
+                    ok = False
+                    err = "Captcha invalide"
+                else:
+                    #On vérifie la valeur du captcha
+                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+                        ok = False
+                        err = "Captcha invalide"
                 
             
             if ok:
@@ -100,3 +102,30 @@ def page_inscription():
     
     captcha = util.captcha.getCaptcha()
     return render_template("accounts/inscription.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)
+
+
+
+def inscription_check_token():
+    #Permet de check les token envoyé par mail à l'page_inscription
+    if "token" not in request.args:
+        abort(404) 
+    token = request.args.get("token")
+    
+            
+    #On vérifie que le token soit bon
+    conn = util.bdd.getConnexion()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE hash_validation LIKE %s", (token,))
+    val = cursor.fetchall()
+            
+    if len(val) == 1:
+        userid = val[0][0]
+        #On update
+        cursor.execute("UPDATE users SET hash_validation = null, validee = true WHERE id = %s", (userid,))     
+        conn.commit()        
+    else:
+        util.bdd.releaseConnexion(conn)
+        abort(404)
+                
+    util.bdd.releaseConnexion(conn)
+    return redirect("/?msg=4")

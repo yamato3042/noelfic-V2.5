@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash
 import hashlib
 import secrets
 import util.captcha
+from param import CHECK_CHAPTCHA
 
 def connexionUser(pseudo, password):
     conn = util.bdd.getConnexion()
@@ -53,18 +54,19 @@ def page_connexion():
             if password == "":
                 ok = False
                 err = "Mot de passe invalide"
-            #Le captcha
-            if "g-recaptcha-response" not in request.form:
-                ok = False
-                err = "Captcha invalide"
-            elif request.form["g-recaptcha-response"] == "":
-                ok = False
-                err = "Captcha invalide"
-            else:
-                #On vérifie la valeur du captcha
-                if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+            if CHECK_CHAPTCHA:
+                #Le captcha
+                if "g-recaptcha-response" not in request.form:
                     ok = False
                     err = "Captcha invalide"
+                elif request.form["g-recaptcha-response"] == "":
+                    ok = False
+                    err = "Captcha invalide"
+                else:
+                    #On vérifie la valeur du captcha
+                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+                        ok = False
+                        err = "Captcha invalide"
                     
             if ok:
                 err = connexionUser(pseudo, password)
