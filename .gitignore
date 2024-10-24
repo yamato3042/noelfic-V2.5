@@ -163,4 +163,4 @@ cython_debug/
 
 param.py
 
-static/avatars/*.jpg
+static/avatars/*
