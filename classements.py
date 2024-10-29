@@ -154,7 +154,7 @@ def classement_genre(genre_,page_):
     cursor = conn.cursor()
     session = accounts.accounts.Session(conn)
 
-    pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics RIGHT JOIN tags ON tags.fic = fics.id WHERE tag = " + str(genreId)) #TODO: oups la faille (impossible)
+    pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics RIGHT JOIN tags ON tags.fic = fics.id WHERE tag = %s", (str(genreId),))
     if pages_raw == "err":
         util.bdd.releaseConnexion(conn)
         abort(404)

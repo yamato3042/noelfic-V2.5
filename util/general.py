@@ -44,7 +44,7 @@ def getStatus(status: int) -> str:
 
 def getNote(note : int) -> list: #Cette fonction elle doit prendre la note et retourné un tableau avec l'état des cinq noel
     ret = [False for i in range(5)]
-    for a in range(note): #TODO: Le bot doit calculer la note et la mettre dans la bdd
+    for a in range(note):
         ret[a] = True
     return ret
 

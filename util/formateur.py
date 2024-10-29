@@ -45,13 +45,25 @@ def convert_links(texte):
 
     return texte_converti
 
-def convert_emoticons(text): #TODO: à refaire
+def convert_emoticons(text):
     # Convertir les émoticônes en images ou icônes
-    emots_dic = util.emots.emotdic()
+    """emots_dic = util.emots.emotdic()
     for i in emots_dic:
         text = text.replace(i, f'<img src="/static/emots/{emots_dic[i]}.gif" alt="{i}"/>')
     
-    return text
+    return text"""
+    # Fonction de remplacement pour l'expression régulière
+    #D'après ChatGPT ça c'est plus performant
+    emots_dic = util.emots.emotdic()
+    def replace_match(match):
+        emoticon = match.group(0)
+        img_id = emots_dic.get(emoticon)
+        return f'<img src="/static/emots/{img_id}.gif" alt="{emoticon}"/>'
+    
+    # Créer une expression régulière qui détecte toutes les clés du dictionnaire EMOTS
+    pattern = re.compile('|'.join(re.escape(emot) for emot in emots_dic.keys()))
+    # Remplacer tous les émoticônes d'un coup
+    return pattern.sub(replace_match, text)
 
 def convert_youtube_links(text):
     # Si le texte est une liste, on le joint en une seule chaîne de caractères

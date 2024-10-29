@@ -40,7 +40,7 @@ def profil(profil):
     if(len(comptes_externes_raw)) > 0:
         comptes_externes = []
         for i in comptes_externes_raw:
-            #TODO ici on fait un traitement pour avoir l'icône de chaque site
+            #Ici on fait un traitement pour avoir l'icône de chaque site
             i["icon"] = util.general.autresSitesIcon(i["site"])
             comptes_externes.append(i)
         info["comptes_externes"] = comptes_externes

@@ -214,7 +214,7 @@ class Fic_editor {
         } else if (chapitre == -1) {
             //Rien
             this.isNouveauChapitre = false;
-            this.cacheur(2) //TODO: La valeur elle est pas bonne hein
+            this.cacheur(2)
         } else {
             this.isNouveauChapitre = false;
             //C'est un chapitre existant, on fetch sur le serveur

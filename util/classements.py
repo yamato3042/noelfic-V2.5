@@ -39,7 +39,7 @@ def gen_fics(fics_raw : int): #Permet de convertir un fic_raw sortant de sql ver
         cur["status"] = util.general.getStatus(i[4])
 
         """cur["note"] = [False for i in range(5)]
-        for a in range(i[6]): #TODO: Le bot doit calculer la note et la mettre dans la bdd
+        for a in range(i[6]):
             cur["note"][a] = True"""
         cur["note"] = util.general.getNote(i[6])
         

@@ -237,10 +237,10 @@ def personalisation_set():
     status = int(val["status"])
     lien = util.formateur.desinfecter(val["lien"])
     description = util.formateur.formatEntrée(val["description"])
-    #TODO: faire la requête pour changer les trucs, et aussi les tags là
+    #Faire la requête pour changer les trucs, et aussi les tags là
     cursor.execute("UPDATE fics SET titre = %s, status = %s, lien = %s, description = %s WHERE id = %s", (titre, status, lien, description, fic,))
     
-    #TODO: Les tags
+    #Les tags
     cursor.execute("DELETE FROM tags WHERE fic = %s", (fic,))
     
     #INSULTEZ MOI JE VOUS HAIS DÉJÀ
@@ -280,7 +280,7 @@ def chapitre_get():
     ret = {
         "titre": val[0],
         "auteur": val[1],
-        "content": util.formateur.formatPourEspaceEcriture(val[2]) #TODO: Y'a des trucs qui marchent pas côté quill faut regarder ça
+        "content": util.formateur.formatPourEspaceEcriture(val[2]) #Y'a des trucs qui marchent pas côté quill faut regarder ça
     }
     
     util.bdd.releaseConnexion(conn)
