@@ -75,7 +75,7 @@ app.add_url_rule("/comptes/edit_fics/fic_create", view_func=accounts.edit_fic.fi
 
 app.add_url_rule("/comptes/resetpass", view_func=accounts.mdp_oublie.resetpass, methods=["GET", "POST"])
 app.add_url_rule("/comptes/changepasseV1", view_func=accounts.mdp_oublie.migrepass, methods=["GET", "POST"])
-app.add_url_rule("/comptes/update_mdp", view_func=accounts.mdp_oublie.update_mdp, methods=["GET", "POST"])
+app.add_url_rule("/comptes/update_mdp", view_func=accounts.mdp_oublie.update_mdp)
 app.add_url_rule("/comptes/valider_compte", view_func=accounts.inscription.inscription_check_token)
 
 @app.errorhandler(404)

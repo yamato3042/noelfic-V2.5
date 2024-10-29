@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
 import util.captcha
+import send_mail
 
 def resetpass():
     err=""
@@ -47,7 +48,8 @@ def resetpass():
                     conn.commit()
                     
                     err = "Un mail vous a été envoyé."
-                    #TODO: Envoyer le mail
+                    #Envoyer le mail
+                    send_mail("Voici le lien pour changer votre mot de passe suite à votre demande. Si vous n'êtes pas à l'origine de cette demande merci de contacter un administrateur", f"noelfic.fr/comptes/update_mdp?token={clée}")
                 else:
                     ok = False
                     err= "Email invalide"   
@@ -100,7 +102,9 @@ def migrepass():
                     conn.commit()
                     
                     err = "Un mail vous a été envoyé."
-                    #TODO: Envoyer le mail
+                    #Envoyer le mail
+                    send_mail("Voici le lien pour changer votre mot de passe suite à la demande de migration de votre compte.", f"noelfic.fr/comptes/update_mdp?token={clée}")
+                    
                 else:
                     ok = False
                     err= "Votre email est invalide ou alors votre compte a déjà été migré"

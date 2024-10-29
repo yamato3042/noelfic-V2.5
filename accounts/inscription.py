@@ -8,6 +8,7 @@ import hashlib
 import secrets
 import util.captcha
 from param import CHECK_CHAPTCHA, ALLOW_AUTH
+import send_mail
 
 def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
@@ -45,7 +46,8 @@ def createUser(pseudo: str, email : str, password : str):
     conn.commit()
     
     
-    #TODO: Envoie du mail
+    #Envoie du mail
+    send_mail.send_mail("Voici le lien pour confirmer votre inscription sur Noelfic.fr", f"noelfic.fr/comptes/valider_compte?token={hashValidation}")
     
     util.bdd.releaseConnexion(conn)
     return None
