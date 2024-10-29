@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA
+from param import CHECK_CHAPTCHA, ALLOW_AUTH
 
 def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
@@ -52,6 +52,8 @@ def createUser(pseudo: str, email : str, password : str):
 
 
 def page_inscription():
+    if not ALLOW_AUTH:
+        abort(404)
     err = None
     if request.method == "POST":
         print(request.form)

@@ -1,0 +1,39 @@
+{#Ouais je sais que ça a rien à faire là#}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<!-- Create the editor container -->
+<div class="text_editor">
+    <div id="emot_selector"></div>
+    <div id="editor"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<style>
+    #emotButton {
+        background-image: url('/static/img/noel-gris.gif');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    #emot_selector {
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 1em;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.4em;
+        justify-content: flex-start;
+        align-content: flex-start;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    #emot_selector img {
+        height: 1.8em;
+        padding: 0.2em;
+    }
+
+    #emot_selector img:hover {background-color: aqua;}
+</style>
+
+<script src="/static/editor.js"></script>

@@ -228,6 +228,7 @@ class Fic_editor {
     }
 
     async save_chapitre() {
+        sans_previsu()
         //On regarde si on est sur un nouveau truc ou pas
         let fic = document.getElementById("fic_select").value
         let chapitre = document.getElementById("chap_select").value

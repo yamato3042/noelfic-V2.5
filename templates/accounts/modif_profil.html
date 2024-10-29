@@ -3,7 +3,7 @@
 <form action="">
     <div>
         <label for="pseudo">Pseudo : </label>
-        <input type="text" name="pseudo" id="pseudo" value="{{info['pseudo']}}" disabled/>
+        <input type="text" name="pseudo" id="pseudo" value="{{info['pseudo']}}" disabled />
     </div>
 
     <div>
@@ -13,10 +13,10 @@
 
     <div>
         <label for="mdp1">Ancien mot de passe : </label>
-        <input type="password" name="mdp1" id="mdp1"/>
+        <input type="password" name="mdp1" id="mdp1" />
 
         <label for="mdp2">Nouveau mot de passe : </label>
-        <input type="password" name="mdp2" id="mdp2"/>
+        <input type="password" name="mdp2" id="mdp2" />
 
         <button onclick="changerMDP()" type='button'> Changer de mot de passe </button>
     </div>
@@ -38,7 +38,7 @@
 
     <div class="pp">
         {#La photo de profil#}
-        <img class="ppimg" src="{{info['avatar']}}" id="imagePreview"/>
+        <img class="ppimg" src="{{info['avatar']}}" id="imagePreview" />
         {#<a class="button">Changer de photo de profil</a>#}
         <input type="file" id="fileInput" accept="image/png, image/jpeg">
 
@@ -47,36 +47,31 @@
 <div>
     <hr>
     <h2>Description</h2>
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-    <!-- Create the editor container -->
-    <div class="text_editor">
-        <div id="editor">
-            {{info["description"]}}
-        </div>
-    </div>
+    {% include "editor.html" %}
 </div>
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-<script src="/static/editor.js"></script>
+
 
 
 <a class="button" id="valider" onclick="valider()">Valider</a>
 
 <script>
+    quill.root.innerHTML = '{{info["description"]}}'
     //Envoyer vers la base les nouvelles info
     function valider() {
+        sans_previsu()
         const formData = new FormData();
 
         formData.append("token", temp_token);
         formData.append("description", quill.root.innerHTML)
         formData.append("email", document.getElementById("email").value)
-        
-        for(let i of ["jvc", "onche", "avenoel", "2sucres"]) {
+
+        for (let i of ["jvc", "onche", "avenoel", "2sucres"]) {
             let val = document.getElementById("site_externe_" + i).value
             formData.append("site_externe_" + i, val)
         }
 
         //La pp :
-        if(changed_pp == true) {
+        if (changed_pp == true) {
             //Changement de pp on ajoute
             let file = document.getElementById('fileInput').files[0];
             console.log(file)
@@ -90,8 +85,8 @@
             // Traitez les données de la réponse ici
             console.log('Success:', data);
             // On vas rediriger
-            window.location.href="{{session.profil_lien}}"
-            
+            window.location.href = "{{session.profil_lien}}"
+
 
         });
     }
@@ -100,7 +95,7 @@
     async function changerMDP() {
         let ancien_mdp = document.getElementById("mdp1").value
         let nouveau_mdp = document.getElementById("mdp2").value
-        if(ancien_mdp == "" || nouveau_mdp == "") {
+        if (ancien_mdp == "" || nouveau_mdp == "") {
             alert("Merci de remplir les champs")
             return
         }
@@ -115,18 +110,18 @@
 
         let data = await response.text()
         console.log(data)
-        if(data == "ERRMDP") {alert("Mot de passe invalide")}
-        if(data == "OK") {window.location.href = "/comptes/connexion"}
+        if (data == "ERRMDP") { alert("Mot de passe invalide") }
+        if (data == "OK") { window.location.href = "/comptes/connexion" }
     }
 
     //TODO: changer pp
-    
+
     changed_pp = false
-    document.getElementById('fileInput').addEventListener('change', function(event) {
+    document.getElementById('fileInput').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const img = document.getElementById('imagePreview');
                 img.src = e.target.result;
                 img.style.display = 'block';

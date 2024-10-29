@@ -62,18 +62,11 @@
         <div class="commentaire" id="minichat_messages"">{{minichat_messages|safe}}</div>
         {% if session.logged %}
         {#L'ÉCRITURE DE MESSAGES#}
-        {#Ouais je sais que ça a rien à faire là#}
-        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-        <!-- Create the editor container -->
-        <div class="text_editor">
-            <div id="editor"></div>
-            <div class="button" onclick="poster_message()">Poster</div>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-        <script src="/static/editor.js"></script>
-
+        {% include "editor.html" %}
+        <div class="button" onclick="poster_message()">Poster</div>
         <script>
             function poster_message() {
+                sans_previsu()
                 const contentHTML = quill.root.innerHTML;
                 const formData = new FormData();
                     formData.append("token", temp_token);

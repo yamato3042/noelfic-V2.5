@@ -1,5 +1,5 @@
 #Ce code contient la page et la requête post pour se connecter sur le site
-from flask import render_template, request, redirect, make_response
+from flask import render_template, request, redirect, make_response, abort
 import util.bdd
 import re 
 import accounts.accounts
@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA
+from param import CHECK_CHAPTCHA, ALLOW_AUTH
 
 def connexionUser(pseudo, password):
     conn = util.bdd.getConnexion()
@@ -42,6 +42,8 @@ def connexionUser(pseudo, password):
     return [True, clée]
 
 def page_connexion():
+    if not ALLOW_AUTH:
+        abort(404)
     err = None
     if request.method == "POST":
         if "pseudo" in request.form and "password" in request.form:

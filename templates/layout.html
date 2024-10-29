@@ -49,7 +49,7 @@
                 </script>
             </div>
             
-            {% else %}
+            {% elif session.allow_auth %}
             <a href="/comptes/connexion" class="button">Connexion</a>
             <a href="/comptes/inscription" class="button">Inscription</a>
             {% endif %}

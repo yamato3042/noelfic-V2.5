@@ -76,15 +76,7 @@
   <label for="content_auteur">Auteur du chapitre : </label>
   <select name="content_auteur" id="content_auteur"></select>
   {#L'écriture du chapitre#}
-  {#TODO: mettre le truc quill#}
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-        <!-- Create the editor container -->
-        <div class="text_editor">
-            <div id="editor"></div>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-        <script src="/static/editor.js"></script>
-
+  {% include "editor.html" %}
   <button onclick="fic_editor.save_chapitre()">Enregistrer</button>
 </div>
 

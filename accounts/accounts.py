@@ -6,6 +6,7 @@ import util.general
 from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
+from param import ALLOW_AUTH
 
 PASSWORD_SALT = "45Scnr7V_NOELFIC_Fa5Mt35q"
 class Session:
@@ -19,6 +20,7 @@ class Session:
         self.profil_lien = ""
         self.temp_token = ""
         self.id = -1
+        self.allow_auth = ALLOW_AUTH
         
         #Login avec token normal
         if "userToken" in request.cookies:
