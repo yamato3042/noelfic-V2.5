@@ -47,7 +47,7 @@ def createUser(pseudo: str, email : str, password : str):
     
     
     #Envoie du mail
-    send_mail.send_mail("Voici le lien pour confirmer votre inscription sur Noelfic.fr", f"noelfic.fr/comptes/valider_compte?token={hashValidation}")
+    send_mail.send_mail("Confirmer votre inscription", "Voici le lien pour confirmer votre inscription sur Noelfic.fr", f"noelfic.fr/comptes/valider_compte?token={hashValidation}", email)
     
     util.bdd.releaseConnexion(conn)
     return None
