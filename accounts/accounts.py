@@ -30,7 +30,7 @@ class Session:
             
     def login(self, token):
         #Connexion avec le token du cookie
-        print(token)
+        #print(token)
         self.cursor.execute("""SELECT id,pseudo,pp FROM users_token 
                             LEFT JOIN users ON users.id = users_token.id_users
                             WHERE token = %s""", (token,))

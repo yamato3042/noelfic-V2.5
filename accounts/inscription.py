@@ -58,7 +58,7 @@ def page_inscription():
         abort(404)
     err = None
     if request.method == "POST":
-        print(request.form)
+        #print(request.form)
         if "pseudo" in request.form and "email" in request.form and "password" in request.form:
             pseudo = request.form.get("pseudo")
             email = request.form.get("email")
@@ -98,7 +98,7 @@ def page_inscription():
                     return redirect("/?msg=1")
         else:
             err = "Merci de remplir tous les champs"
-        print(request.form)
+        #print(request.form)
     
     conn = util.bdd.getConnexion()
     session = accounts.accounts.Session(conn)

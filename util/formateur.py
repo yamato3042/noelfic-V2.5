@@ -22,7 +22,7 @@ def convert_img_tags(texte):
     # Fonction de remplacement
     def remplacer_balise(match):
         url = match.group(1)
-        print("url : ", url)
+        #print("url : ", url)
         return f'<img src="{url}"/>'
 
     # Remplacer les balises [img] par les balises <img>
@@ -37,7 +37,7 @@ def convert_links(texte):
     # Fonction de remplacement
     def remplacer_lien(match):
         url = match.group(0)
-        print(url)
+        #print(url)
         return f'<a href="{url}">{url}</a>'
 
     # Remplacer les liens restants par des balises <a>

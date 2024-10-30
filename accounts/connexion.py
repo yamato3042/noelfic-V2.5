@@ -19,7 +19,7 @@ def connexionUser(pseudo, password):
         util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
     #Vérification du mot de passe
-    print(val[0][1])
+    #print(val[0][1])
     if not check_password_hash(val[0][1], password+accounts.accounts.PASSWORD_SALT):
         util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
@@ -80,7 +80,7 @@ def page_connexion():
                     return resp
         else:
             err = "Merci de remplir tous les champs"
-        print(request.form)
+        #print(request.form)
     
     conn = util.bdd.getConnexion()
     session = accounts.accounts.Session(conn)

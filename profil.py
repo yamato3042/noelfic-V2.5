@@ -19,7 +19,7 @@ def profil(profil):
     if len(info_raw) < 1:
         util.bdd.releaseConnexion(conn)
         abort(404)
-    print(info_raw)
+    #print(info_raw)
     id = info_raw[0][0]
     info = {
         "id": info_raw[0][0],
