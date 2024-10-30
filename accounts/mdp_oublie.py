@@ -49,7 +49,7 @@ def resetpass():
                     
                     err = "Un mail vous a été envoyé."
                     #Envoyer le mail
-                    send_mail("Changer de mot de passe", "Voici le lien pour changer votre mot de passe suite à votre demande. Si vous n'êtes pas à l'origine de cette demande merci de contacter un administrateur", f"noelfic.fr/comptes/update_mdp?token={clée}", email)
+                    send_mail.send_mail("Changer de mot de passe", "Voici le lien pour changer votre mot de passe suite à votre demande. Si vous n'êtes pas à l'origine de cette demande merci de contacter un administrateur", f"noelfic.fr/comptes/update_mdp?token={clée}", email)
                 else:
                     ok = False
                     err= "Email invalide"   
@@ -103,7 +103,7 @@ def migrepass():
                     
                     err = "Un mail vous a été envoyé."
                     #Envoyer le mail
-                    send_mail("Migration de votre compte", "Voici le lien pour changer votre mot de passe suite à la demande de migration de votre compte.", f"noelfic.fr/comptes/update_mdp?token={clée}", email)
+                    send_mail.send_mail("Migration de votre compte", "Voici le lien pour changer votre mot de passe suite à la demande de migration de votre compte.", f"noelfic.fr/comptes/update_mdp?token={clée}", email)
                     
                 else:
                     ok = False

@@ -1,3 +1,7 @@
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 def send_mail(objet: str, content : str, link: str, email: str):
     # Configuration de l'email
     sender_email = "comptes@noelfic.fr"
