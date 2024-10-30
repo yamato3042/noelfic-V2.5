@@ -44,6 +44,10 @@ def fic(fic_, chapitre_):
         util.bdd.releaseConnexion(conn)
         abort(404)
     
+    #Maintenant on vas vérifier que le titre de la fic dans la barre d'adresse a été slugifié correctement
+    if fic_ != util.general.getFicLink(fic, chapitre_raw[0][0], 1, True):
+        abort(404)
+    
     #On traite le chapitre
     chapitre_dic = {
         "fic_id" : fic,
@@ -110,6 +114,6 @@ def fic(fic_, chapitre_):
         commentaires.append(cur)
 
 
-    titre = f"{chapitre_dic["fic_titre"]} page {chapitre_dic["chapitre"]}"
+    titre = f"{chapitre_dic['fic_titre']} page {chapitre_dic['chapitre']}"
     util.bdd.releaseConnexion(conn)
     return render_template("fic.html", titre=titre, customCSS="fic.css", ajout_sidebar=render_template("fic_nav.html", listeChapitres=listChapitres), chapitre=chapitre_dic, commentaires=commentaires, session=session)

@@ -3,11 +3,14 @@
 import datetime
 import hashlib
 
-def getFicLink(id : int, nom : str, chapitre : int = 1) -> str:
+def getFicLink(id : int, nom : str, chapitre : int = 1, naked=False) -> str: #En gros si naked on fournit juste la valeur au milieu
     nom_conv = nom.lower()
     nom_conv = nom_conv.strip()
     nom_conv = nom_conv.replace(" ", "-")
-    return f"/fic/{id}-{nom_conv}/{chapitre}"
+    if not naked:
+        return f"/fic/{id}-{nom_conv}/{chapitre}"
+    elif naked:
+        return f"{id}-{nom_conv}"
 
 def getUserLink(user: str) -> str:
     nom = user.lower()
