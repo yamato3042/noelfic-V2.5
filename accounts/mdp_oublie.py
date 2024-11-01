@@ -8,6 +8,7 @@ import hashlib
 import secrets
 import util.captcha
 import send_mail
+import param
 
 def resetpass():
     err=""
@@ -141,7 +142,7 @@ def update_mdp():
                 #On change le mot de passe
                 
                 #On crypte le mot de passe
-                mdp = generate_password_hash(new_mdp + accounts.accounts.PASSWORD_SALT)
+                mdp = generate_password_hash(new_mdp + param.PASSWORD_SALT)
     
                 if migration:
                     cursor.execute("UPDATE users SET mdp = %s, from_v1 = false WHERE id = %s", (mdp, userid))

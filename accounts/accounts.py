@@ -8,7 +8,6 @@ import hashlib
 import secrets
 from param import ALLOW_AUTH
 
-PASSWORD_SALT = "45Scnr7V_NOELFIC_Fa5Mt35q"
 class Session:
     def __init__(self, conn : psycopg2.extensions.connection):
         self.connection = conn

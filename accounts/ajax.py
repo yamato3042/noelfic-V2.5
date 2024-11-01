@@ -10,6 +10,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from PIL import Image
 import util.general
 import io
+import param
 
 def getUserIdFromTempToken(cursor : psycopg2.extensions.cursor, token):
     cursor.execute("SELECT id_users FROM users_shorts_tokens WHERE token = %s", (request.form["token"],))
@@ -177,13 +178,13 @@ def ajax_modif_mdp():
     cursor.execute("SELECT mdp FROM users WHERE id = %s", (userId,))
     val = cursor.fetchall()
     
-    if not check_password_hash(val[0][0], request.form["ancien_mdp"]+accounts.accounts.PASSWORD_SALT):
+    if not check_password_hash(val[0][0], request.form["ancien_mdp"]+ param.PASSWORD_SALT):
         util.bdd.releaseConnexion(conn)
         return "ERRMDP"
     
     #Changer le mdp dans la bdd
     #Génération du hash
-    new_mdp = generate_password_hash(request.form["nouveau_mdp"] + accounts.accounts.PASSWORD_SALT)
+    new_mdp = generate_password_hash(request.form["nouveau_mdp"] + param.PASSWORD_SALT)
     #Insertion dans la BDD
     cursor.execute("UPDATE users SET mdp = %s WHERE id = %s", (new_mdp, userId))
     #Supression de tous les tokens pour cette utilisateur

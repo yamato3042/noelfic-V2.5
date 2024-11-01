@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA, ALLOW_AUTH
+from param import CHECK_CHAPTCHA, ALLOW_AUTH, PASSWORD_SALT
 import send_mail
 
 def createUser(pseudo: str, email : str, password : str):
@@ -32,7 +32,7 @@ def createUser(pseudo: str, email : str, password : str):
         return "L'adresse email est déjà utilisée"
     
     #On crypte le mot de passe
-    mdp = generate_password_hash(password + accounts.accounts.PASSWORD_SALT)
+    mdp = generate_password_hash(password + PASSWORD_SALT)
     
     #On génère le hash de validation
     hashValidation = hashlib.sha256(secrets.token_urlsafe(128).encode()).hexdigest()

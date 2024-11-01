@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA, ALLOW_AUTH
+from param import CHECK_CHAPTCHA, ALLOW_AUTH, PASSWORD_SALT
 
 def connexionUser(pseudo, password):
     conn = util.bdd.getConnexion()
@@ -20,7 +20,7 @@ def connexionUser(pseudo, password):
         return "Mot de passe ou pseudo invalide"
     #Vérification du mot de passe
     #print(val[0][1])
-    if not check_password_hash(val[0][1], password+accounts.accounts.PASSWORD_SALT):
+    if not check_password_hash(val[0][1], password+PASSWORD_SALT):
         util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
     
