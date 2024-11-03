@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
     {% block content %}
     <h1>{{titre}}</h1>
+    {% if err %}
+    <h2 style="color: red;">{{err}}</h2>
+    {% else %}
 
     {% if modeGenre %}
     <div class="genres">
@@ -61,7 +64,7 @@
         {% endfor %}
 
         {#Le chevron droit#}
-        {% if maxPage != 1 %}
+        {% if maxPage != 1 and curPage != maxPage%}
 
             {%if recherche %}
             {#ICI on fait la différence de lien entre les classements et la recherche#}
@@ -109,4 +112,5 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 {% endblock %}

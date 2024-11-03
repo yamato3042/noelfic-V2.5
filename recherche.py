@@ -7,28 +7,50 @@ import util.classements
 import util.genre
 from flask import request
 import accounts.accounts
+import re 
+def sanitize_search(search_term: str) -> str:
+    # Nettoie la chaîne de recherche
+    # Garde uniquement les caractères alphanumériques et quelques caractères spéciaux
+    return re.sub(r'[^a-zA-Z0-9\s\-_]', '', search_term)
 
 def recherche():
     search = request.args.get("search", None)
+    
     page = 1
     if(request.args.get("page", None) != None):
         if request.args.get("page").isdigit():
             page = int(request.args.get("page"))
 
+    #On check que la recherche soit valide
+    search = sanitize_search(search)
+        
+    if len(search) > 100:
+        search = search[:100]
+        
     titre = f"Recherche pour : {search} - Page {page}"
     conn = util.bdd.getConnexion()
     cursor = conn.cursor()
     session = accounts.accounts.Session(conn)
 
+    if search == '':
+        util.bdd.releaseConnexion(conn)
+        err = "Recherche vide"
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+        
+    if len(search) < 2:
+        util.bdd.releaseConnexion(conn)
+        err = "Recherche trop courte (minimum deux caractères)"
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+    
     pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics WHERE titre ILIKE %s", (f"%{search}%",))
     if pages_raw == "err":
         util.bdd.releaseConnexion(conn)
-        abort(404)
+        err = "Aucun résultats"
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+    
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
 
-
-    
     #On chope la liste des fics par rapport au nom de l'offset
     cursor.execute("""SELECT fics.id, fics.titre, users.pseudo, fics.creation,fics.status, fics.collaboratif, fics.note FROM fics
                     LEFT JOIN users ON users.id = fics.auteur
