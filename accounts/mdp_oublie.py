@@ -16,17 +16,18 @@ def resetpass():
         if "email" in request.form:
             email = request.form.get("email")
             ok = True
-            if "g-recaptcha-response" not in request.form:
-                ok = False
-                err = "Captcha invalide"
-            elif request.form["g-recaptcha-response"] == "":
-                ok = False
-                err = "Captcha invalide"
-            else:
-                #On vérifie la valeur du captcha
-                if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+            if param.CHECK_CHAPTCHA:
+                if "g-recaptcha-response" not in request.form:
                     ok = False
                     err = "Captcha invalide"
+                elif request.form["g-recaptcha-response"] == "":
+                    ok = False
+                    err = "Captcha invalide"
+                else:
+                    #On vérifie la valeur du captcha
+                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+                        ok = False
+                        err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
                 conn = util.bdd.getConnexion()
@@ -70,17 +71,18 @@ def migrepass():
         if "email" in request.form:
             email = request.form.get("email")
             ok = True
-            if "g-recaptcha-response" not in request.form:
-                ok = False
-                err = "Captcha invalide"
-            elif request.form["g-recaptcha-response"] == "":
-                ok = False
-                err = "Captcha invalide"
-            else:
-                #On vérifie la valeur du captcha
-                if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+            if param.CHECK_CHAPTCHA:
+                if "g-recaptcha-response" not in request.form:
                     ok = False
                     err = "Captcha invalide"
+                elif request.form["g-recaptcha-response"] == "":
+                    ok = False
+                    err = "Captcha invalide"
+                else:
+                    #On vérifie la valeur du captcha
+                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
+                        ok = False
+                        err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
                 conn = util.bdd.getConnexion()
