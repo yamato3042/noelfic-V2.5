@@ -40,7 +40,7 @@ def classement_date(page_):
                     OFFSET %s""", (offset,))
         return cursor.fetchall()
     
-    titre = f"Classement par popularité - Page {page_}"
+    titre = f"Classement par date - Page {page_}"
     return util.classements.rank(x, page_, titre)
 
 def classement_note(page_):
@@ -52,7 +52,7 @@ def classement_note(page_):
                     OFFSET %s""", (offset,))
         return cursor.fetchall()
     
-    titre = f"Classement par popularité - Page {page_}"
+    titre = f"Classement par note - Page {page_}"
     return util.classements.rank(x, page_, titre)
 
 
