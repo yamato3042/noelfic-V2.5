@@ -15,8 +15,6 @@ def updateNotes(cursor: psycopg2.extensions.cursor):
         fic = i[0]
         note = float(i[1])
         
-        print(f"calcule note pour {fic} : {note}")
-        
         if fic not in notes:
             notes[fic] = note
         
@@ -29,16 +27,13 @@ def updateNotes(cursor: psycopg2.extensions.cursor):
         
 def clean_shorts_tokens(cursor:psycopg2.extensions.cursor):
     #On nettoie le bordel
-    print("Nettoyage des tokens utilisateurs temporaires")
     cursor.execute("DELETE FROM users_shorts_tokens WHERE creation < NOW() - INTERVAL '1 day';")
 
 def clean_tokens(cursor: psycopg2.extensions.cursor):
     #On nettoie les tokens en httponly, ceux pas utilisés depuis 6 mois
-    print("Nettoyage des tokens utilisateurs")
     cursor.execute("DELETE FROM users_token WHERE lastconn < NOW() - INTERVAL '6 months';")
     
 def update_collaboratif(cursor: psycopg2.extensions.cursor):
-    print("Mise à jour des fics collaboratives")
     cursor.execute("""SELECT id_fics, COUNT(id_users) 
             FROM collaborateur 
             GROUP BY id_fics HAVING COUNT(id_users) > 1""")
@@ -52,7 +47,6 @@ def update_collaboratif(cursor: psycopg2.extensions.cursor):
 
 def clean_chg_mdp_tokens(cursor:psycopg2.extensions.cursor):
     #On nettoie le bordel
-    print("Nettoyage des tokens de changement de mot de passe")
     cursor.execute("DELETE FROM token_changement_mdp WHERE timestamp < NOW() - INTERVAL '2 day';")
     
     
