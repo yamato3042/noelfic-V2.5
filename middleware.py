@@ -27,11 +27,12 @@ class Middleware:
         # Appel de l'application Flask pour traiter la requête
         response = self.app(environ, start_response)
         
-        #On enregistre les stats
-        conn.rollback()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO stats_visits VALUES (NOW(), %s, %s, %s, %s)", (request.path, request.user_agent.string, request.remote_addr, request.environ["session"].logged))
-        conn.commit()
+        if RECORD_STAT:
+            #On enregistre les stats
+            conn.rollback()
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO stats_visits VALUES (NOW(), %s, %s, %s, %s)", (request.path, request.user_agent.string, request.remote_addr, request.environ["session"].logged))
+            conn.commit()
         
         # Code exécuté après le traitement de la requête
         util.bdd.releaseConnexion(conn)
