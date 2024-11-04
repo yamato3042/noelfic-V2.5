@@ -164,3 +164,4 @@ cython_debug/
 param.py
 
 static/avatars/*
+analytics/*

@@ -1,6 +1,7 @@
-from flask import Request
+from flask import Request, Response
 import util.bdd
 import accounts.accounts
+from param import RECORD_STAT
 
 class Middleware:
     def __init__(self, app):
@@ -25,6 +26,12 @@ class Middleware:
         
         # Appel de l'application Flask pour traiter la requête
         response = self.app(environ, start_response)
+        
+        #On enregistre les stats
+        conn.rollback()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO stats_visits VALUES (NOW(), %s, %s, %s, %s)", (request.path, request.user_agent.string, request.remote_addr, request.environ["session"].logged))
+        conn.commit()
         
         # Code exécuté après le traitement de la requête
         util.bdd.releaseConnexion(conn)
