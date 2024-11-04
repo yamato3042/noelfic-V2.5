@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
+import param
 app = Flask(__name__)
 
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
@@ -7,6 +8,9 @@ app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
 import psycopg2
 import accounts.accounts
 
+if param.BEHIND_PROXY:
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 import middleware
 app.wsgi_app = middleware.Middleware(app.wsgi_app)
 
