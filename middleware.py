@@ -28,11 +28,9 @@ class Middleware:
         response = self.app(environ, start_response)
         
         if RECORD_STAT:
-            ip = ""
-            if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-                ip = request.environ['REMOTE_ADDR']
-            else:
-                ip = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+            ip = request.access_route[0]
+            print(ip)
+            print(type(ip))
             #On enregistre les stats
             conn.rollback()
             cursor = conn.cursor()
