@@ -29,8 +29,6 @@ class Middleware:
         
         if RECORD_STAT:
             ip = request.access_route[0]
-            print(ip)
-            print(type(ip))
             #On enregistre les stats
             conn.rollback()
             cursor = conn.cursor()
