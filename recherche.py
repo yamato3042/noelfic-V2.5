@@ -1,5 +1,4 @@
 from flask import render_template
-import util.bdd
 import util.general
 from flask import abort
 import psycopg2
@@ -15,6 +14,7 @@ def sanitize_search(search_term: str) -> str:
 
 def recherche():
     search = request.args.get("search", None)
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     
     page = 1
     if(request.args.get("page", None) != None):
@@ -28,25 +28,19 @@ def recherche():
         search = search[:100]
         
     titre = f"Recherche pour : {search} - Page {page}"
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    session = accounts.accounts.Session(conn)
 
     if search == '':
-        util.bdd.releaseConnexion(conn)
         err = "Recherche vide"
-        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=request.environ["session"])
         
     if len(search) < 2:
-        util.bdd.releaseConnexion(conn)
         err = "Recherche trop courte (minimum deux caractères)"
-        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=request.environ["session"])
     
     pages_raw = util.classements.getPages(page, cursor, "SELECT count(*) FROM fics WHERE titre ILIKE %s", (f"%{search}%",))
     if pages_raw == "err":
-        util.bdd.releaseConnexion(conn)
         err = "Aucun résultats"
-        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=session)
+        return render_template("rank.html", titre=titre, customCSS="rank.css", err=err, session=request.environ["session"])
     
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -64,5 +58,4 @@ def recherche():
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    util.bdd.releaseConnexion(conn)
-    return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search, session=session)
+    return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, recherche=search, session=request.environ["session"])

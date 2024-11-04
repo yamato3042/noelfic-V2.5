@@ -1,6 +1,5 @@
 #Contient requête et pages pour les mots de passe oubliés et aussi les migrations
 from flask import render_template, request, redirect, make_response, abort
-import util.bdd
 import re 
 import accounts.accounts
 from werkzeug.security import generate_password_hash
@@ -11,6 +10,8 @@ import send_mail
 import param
 
 def resetpass():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
     err=""
     if request.method == "POST":
         if "email" in request.form:
@@ -30,8 +31,6 @@ def resetpass():
                         err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
-                conn = util.bdd.getConnexion()
-                cursor = conn.cursor()
                 cursor.execute("SELECT id FROM users WHERE mail LIKE %s AND from_v1 = false", (email,))
                 val = cursor.fetchall()
                 if len(val) == 1:
@@ -47,7 +46,7 @@ def resetpass():
                             break;
                     #On crée le token dans la bdd
                     cursor.execute("INSERT INTO token_changement_mdp VALUES (%s,%s, false, NOW())", (user, clée))
-                    conn.commit()
+                    request.environ["conn"].commit()
                     
                     err = "Un mail vous a été envoyé."
                     #Envoyer le mail
@@ -55,17 +54,15 @@ def resetpass():
                 else:
                     ok = False
                     err= "Email invalide"   
-                util.bdd.releaseConnexion(conn)
     #La page qui reset les mots de passe
     #Si y'a un argument d'url nommé token on affiche le truc de changement de mdp au lieu du truc qui demande le mail
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
     captcha = util.captcha.getCaptcha()
-    util.bdd.releaseConnexion(conn)
     return render_template("accounts/mdp_oublie_migration.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)
 
 
 def migrepass():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
     err=""
     if request.method == "POST":
         if "email" in request.form:
@@ -85,8 +82,6 @@ def migrepass():
                         err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
-                conn = util.bdd.getConnexion()
-                cursor = conn.cursor()
                 cursor.execute("SELECT id FROM users WHERE mail LIKE %s AND from_v1 = true", (email,))
                 val = cursor.fetchall()
                 if len(val) == 1:
@@ -102,7 +97,7 @@ def migrepass():
                             break;
                     #On crée le token dans la bdd
                     cursor.execute("INSERT INTO token_changement_mdp VALUES (%s,%s, true, NOW())", (user, clée))
-                    conn.commit()
+                    request.environ["conn"].commit()
                     
                     err = "Un mail vous a été envoyé."
                     #Envoyer le mail
@@ -111,17 +106,16 @@ def migrepass():
                 else:
                     ok = False
                     err= "Votre email est invalide ou alors votre compte a déjà été migré"
-                util.bdd.releaseConnexion(conn)
     #La page qui reset les mots de passe
     #Si y'a un argument d'url nommé token on affiche le truc de changement de mdp au lieu du truc qui demande le mail
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
     captcha = util.captcha.getCaptcha()
-    util.bdd.releaseConnexion(conn)
     return render_template("accounts/mdp_oublie_migration.html", err=err, customCSS="accounts.css", session=session, captcha=captcha, migration=True)
 
 
 def update_mdp():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
+    
     if "token" not in request.args:
         abort(404) 
     err = ""
@@ -132,8 +126,6 @@ def update_mdp():
             token = request.args.get("token")
             
             #On vérifie que le token soit bon
-            conn = util.bdd.getConnexion()
-            cursor = conn.cursor()
             cursor.execute("SELECT id_users, migration FROM token_changement_mdp WHERE token LIKE %s", (token,))
             val = cursor.fetchall()
             
@@ -154,17 +146,12 @@ def update_mdp():
                 #On suprimme le token
                 cursor.execute("DELETE FROM token_changement_mdp WHERE token LIKE %s", (token,))
                 
-                conn.commit()
+                request.environ["conn"].commit()
                 
-                util.bdd.releaseConnexion(conn)
                 return redirect("/?msg=3")
             
-            util.bdd.releaseConnexion(conn)
             err = "token invalide"
             #On vérifie que le mot de passe soit ok
                 
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
     captcha = util.captcha.getCaptcha()
-    util.bdd.releaseConnexion(conn)
     return render_template("accounts/mdp_oublie_migration.html", err=err, customCSS="accounts.css", session=session, captcha=captcha, update=True)

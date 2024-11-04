@@ -1,11 +1,9 @@
-from flask import redirect, render_template
-import util.bdd
+from flask import redirect, render_template, request
 import util.general
 import accounts.accounts
 def modif_profil():
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
     
     if not session.logged:
         return redirect("/")
@@ -22,5 +20,4 @@ def modif_profil():
         "comptes_autres_sites": {item['site']: item['pseudo'] for item in info_raw[3]}
     }
     
-    util.bdd.releaseConnexion(conn)
     return render_template("accounts/modif_profil.html", customCSS="modif_profil.css", session=session, info=info)

@@ -1,7 +1,6 @@
-from flask import render_template
+from flask import render_template, request
 import psycopg2
 import util.general
-import util.bdd
 import util.formateur
 import accounts.accounts
 def render_chat(cursor: psycopg2.extensions.cursor, limit = 20):
@@ -25,17 +24,12 @@ def render_chat(cursor: psycopg2.extensions.cursor, limit = 20):
     return render_template("minichat.html", msg=messages)
 
 def action_get_chat_messages():
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     ret = render_chat(cursor)
-    util.bdd.releaseConnexion(conn)
     return ret
 
 def page_minichat():
     #Retournes tous le minichat
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    session = accounts.accounts.Session(conn)
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     messages = render_chat(cursor, limit=None) #On met la limit sur null pour qu'il n'y en ai pas
-    util.bdd.releaseConnexion(conn)
-    return render_template("minichat_all.html", titre="Tous les messages du minichat", customCSS="minichat_all.css", messages=messages, session=session)
+    return render_template("minichat_all.html", titre="Tous les messages du minichat", customCSS="minichat_all.css", messages=messages, session=request.environ["session"])

@@ -1,9 +1,7 @@
 #Contient un ensemble de fonctions pour gérer les classements
 from typing import Callable
-from flask import render_template
-import util.bdd
+from flask import render_template, request, abort
 import util.general
-from flask import abort
 import psycopg2
 import util.classements
 import util.genre
@@ -75,17 +73,15 @@ def getPages(page : int, cursor: psycopg2.extensions.cursor, request, request_da
 
 #Cette fonction prend en argument la ou les requêtes SQL à executer pour génerer un classement, permet d'éviter les codes en doublon
 def rank(request_function: Callable[[psycopg2.extensions.cursor, int], list], page_, titre : str, get_pages_request : str = "SELECT count(*) FROM fics", get_pages_request_data : tuple = (), modeGenre=False):
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
+    
     if not page_.isdigit():
         abort(404)
     page = int(page_)
-    
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    session = accounts.accounts.Session(conn)
 
     pages_raw = util.classements.getPages(page, cursor, get_pages_request, get_pages_request_data)
     if pages_raw == "err":
-        util.bdd.releaseConnexion(conn)
         abort(404)
     nbPages = pages_raw["nbPages"]
     offset = pages_raw["offset"]
@@ -97,5 +93,4 @@ def rank(request_function: Callable[[psycopg2.extensions.cursor, int], list], pa
 
     liste_pages = util.classements.gen_liste_pages(page, nbPages)
 
-    util.bdd.releaseConnexion(conn)
     return render_template("rank.html", customCSS="rank.css", titre=titre, fics=fics, liste_pages=liste_pages, curPage = page, maxPage = nbPages, session=session, modeGenre=modeGenre)

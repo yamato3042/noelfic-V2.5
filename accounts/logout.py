@@ -1,6 +1,7 @@
-import util.bdd
 from flask import request, redirect, make_response
 def logout():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    
     if "token" not in request.args:
         return redirect("/")
     
@@ -11,8 +12,6 @@ def logout():
         return redirect("/")
     
     token = request.cookies.get("userToken")
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
 
     cursor.execute("""SELECT users.id FROM users_shorts_tokens
                     LEFT JOIN users on users.id = users_shorts_tokens.id_users
@@ -25,12 +24,10 @@ def logout():
     if len(val) == 1:
         #On suprimme le token
         cursor.execute("DELETE FROM users_token WHERE token = %s", (token,))
-        conn.commit()
+        request.environ["conn"].commit()
         #On suprimme le cookie
         resp = make_response(redirect("/"))
         resp.delete_cookie("userToken")
-        util.bdd.releaseConnexion(conn)
         return resp
     
-    util.bdd.releaseConnexion(conn)
     return redirect("/")

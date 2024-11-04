@@ -1,6 +1,5 @@
 #Ce fichier vas regarder le cookie, etc et génerer les tokens temporaires pour le système de compte de base sur l'ensemble du site.
 import psycopg2
-import util.bdd
 from flask import request
 import util.general
 from werkzeug.security import generate_password_hash
@@ -9,7 +8,7 @@ import secrets
 from param import ALLOW_AUTH
 
 class Session:
-    def __init__(self, conn : psycopg2.extensions.connection):
+    def __init__(self, conn : psycopg2.extensions.connection, request=request):
         self.connection = conn
         self.cursor = conn.cursor()
         

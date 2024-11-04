@@ -1,5 +1,4 @@
-from flask import render_template, abort
-import util.bdd
+from flask import render_template, abort, request
 import util.general
 import util.classements
 import datetime
@@ -8,16 +7,14 @@ import accounts.accounts
 
 def profil(profil):
     #On commence par obtenir le numéro de la fic
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    session = accounts.accounts.Session(conn)
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
 
     #On chope la liste des chapitres de la fic
     cursor.execute("""SELECT id,pseudo,description,comptes_autres_sites,inscription,derniere_conn,pp 
                     FROM users WHERE validee = true AND pseudo ILIKE %s""", (profil,))
     info_raw = cursor.fetchall()
     if len(info_raw) < 1:
-        util.bdd.releaseConnexion(conn)
         abort(404)
     #print(info_raw)
     id = info_raw[0][0]
@@ -70,5 +67,4 @@ def profil(profil):
     if session.logged and session.id == info["id"]:
         editButton = True
 
-    util.bdd.releaseConnexion(conn)
     return render_template("profil.html", titre=info["pseudo"], customCSS="profil.css", info=info, chapitres=chapitres, session=session, editButton=editButton)

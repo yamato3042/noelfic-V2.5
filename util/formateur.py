@@ -171,19 +171,6 @@ def convert_to_custom_tags(text, reverse=False):
         # Remplacez les balises [img]...[/img] par <img src="...">
         text = pattern.sub(r'<img src="\1">', text)
     
-    """
-    text = text.replace("<strong>", "[b]")
-    text = text.replace("</strong>", "[/b]")
-    
-    text = text.replace("<em>", "[i]")
-    text = text.replace("</em>", "[/i]")
-    
-    text = text.replace("<u>", "[u]")
-    text = text.replace("</u>", "[/u]")"""
-    
-    
-    
-    
     return text    
 
 def formatEntrée(content): #Prend un texte en entrée et le rend propre pour la BDD

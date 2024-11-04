@@ -1,6 +1,5 @@
 #Ce code contient la page et la requête post pour se connecter sur le site
 from flask import render_template, request, redirect, make_response, abort
-import util.bdd
 import re 
 import accounts.accounts
 from werkzeug.security import check_password_hash
@@ -10,18 +9,15 @@ import util.captcha
 from param import CHECK_CHAPTCHA, ALLOW_AUTH, PASSWORD_SALT
 
 def connexionUser(pseudo, password):
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #Cette fonction vas récupérer l'utilisateur et le token
     cursor.execute("SELECT id, mdp FROM users WHERE pseudo = %s AND mdp IS NOT NULL AND validee = true", (pseudo,))
     val = cursor.fetchall()
     if len(val) != 1:
-        util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
     #Vérification du mot de passe
     #print(val[0][1])
     if not check_password_hash(val[0][1], password+PASSWORD_SALT):
-        util.bdd.releaseConnexion(conn)
         return "Mot de passe ou pseudo invalide"
     
     #Génération du token
@@ -35,13 +31,15 @@ def connexionUser(pseudo, password):
             break;
     
     cursor.execute("INSERT INTO users_token VALUES (%s,%s,NOW(), NOW())", (val[0][0], clée))
-    conn.commit()
+    request.environ["conn"].commit()
     
     #On retourne la clée
-    util.bdd.releaseConnexion(conn)
     return [True, clée]
 
 def page_connexion():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
+    
     if not ALLOW_AUTH:
         abort(404)
     err = None
@@ -82,8 +80,5 @@ def page_connexion():
             err = "Merci de remplir tous les champs"
         #print(request.form)
     
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
     captcha = util.captcha.getCaptcha()
-    util.bdd.releaseConnexion(conn)
     return render_template("accounts/connexion.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)

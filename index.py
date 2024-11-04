@@ -1,14 +1,11 @@
-from flask import render_template
-import util.bdd
+from flask import render_template, request
 import util.general
 import re
 import minichat
 import accounts.accounts
 def index():
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    
-    session = accounts.accounts.Session(conn)
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
 
     cursor.execute("""SELECT num, fic, fics.titre, chapitres.creation FROM chapitres 
                     LEFT JOIN fics ON fics.id = chapitres.fic
@@ -41,5 +38,4 @@ def index():
     #Le chat
     minichat_messages = minichat.render_chat(cursor)
 
-    util.bdd.releaseConnexion(conn)
     return render_template("index.html", session=session, customCSS="index.css", chapitres=chapitres, penseedeo=penseedeo, minichat_messages=minichat_messages)

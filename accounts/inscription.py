@@ -2,7 +2,6 @@
 from flask import render_template, request, redirect, abort
 import re 
 import accounts.accounts
-import util.bdd
 from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
@@ -12,8 +11,7 @@ import send_mail
 
 def createUser(pseudo: str, email : str, password : str):
     #Cette fonction crée un utilisateur dans la BDD et renvoie une erreur si problème
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     
     # on vérifie que le pseudo n'existe pas déjà
     cursor.execute("SELECT id FROM users WHERE pseudo ILIKE %s", (pseudo,))
@@ -22,13 +20,11 @@ def createUser(pseudo: str, email : str, password : str):
     ps.extend(list(cursor.fetchall()))
     
     if len(ps) > 0:
-        util.bdd.releaseConnexion(conn)
         return "Ce pseudonyme existe déjà"
     
     #On vérifie que l'email n'existe pas déjà
     cursor.execute("SELECT id FROM users WHERE mail ILIKE %s", (email,))
     if len(cursor.fetchall()) > 0:
-        util.bdd.releaseConnexion(conn)
         return "L'adresse email est déjà utilisée"
     
     #On crypte le mot de passe
@@ -43,17 +39,18 @@ def createUser(pseudo: str, email : str, password : str):
                         RETURNING id""",
                         (pseudo, mdp, email, hashValidation,))
     id = cursor.fetchall()[0][0]
-    conn.commit()
+    request.environ["conn"].commit()
     
     
     #Envoie du mail
     send_mail.send_mail("Confirmer votre inscription", "Voici le lien pour confirmer votre inscription sur Noelfic.fr", f"noelfic.fr/comptes/valider_compte?token={hashValidation}", email)
-    
-    util.bdd.releaseConnexion(conn)
     return None
 
 
 def page_inscription():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
+    
     if not ALLOW_AUTH:
         abort(404)
     err = None
@@ -100,9 +97,6 @@ def page_inscription():
             err = "Merci de remplir tous les champs"
         #print(request.form)
     
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
-    util.bdd.releaseConnexion(conn)
     
     captcha = util.captcha.getCaptcha()
     return render_template("accounts/inscription.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)
@@ -110,6 +104,7 @@ def page_inscription():
 
 
 def inscription_check_token():
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #Permet de check les token envoyé par mail à l'page_inscription
     if "token" not in request.args:
         abort(404) 
@@ -117,8 +112,6 @@ def inscription_check_token():
     
             
     #On vérifie que le token soit bon
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE hash_validation LIKE %s", (token,))
     val = cursor.fetchall()
             
@@ -126,10 +119,8 @@ def inscription_check_token():
         userid = val[0][0]
         #On update
         cursor.execute("UPDATE users SET hash_validation = null, validee = true WHERE id = %s", (userid,))     
-        conn.commit()        
+        request.environ["conn"].commit()      
     else:
-        util.bdd.releaseConnexion(conn)
         abort(404)
                 
-    util.bdd.releaseConnexion(conn)
     return redirect("/?msg=4")

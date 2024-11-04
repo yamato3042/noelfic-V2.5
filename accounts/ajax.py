@@ -1,6 +1,5 @@
 #Ce script contient les différentes actions des requêtes ajax
 #TODO: à la limite faudrait utiliser un template ou un truc du style pour n'importer q'une fois toutes les requêtes d'ici dans le main genre un subsystem
-import util.bdd
 from flask import request
 import psycopg2
 import util.formateur
@@ -16,7 +15,6 @@ def getUserIdFromTempToken(cursor : psycopg2.extensions.cursor, token):
     cursor.execute("SELECT id_users FROM users_shorts_tokens WHERE token = %s", (request.form["token"],))
     id_raw = cursor.fetchall()
     if len(id_raw) != 1:
-        util.bdd.releaseConnexion(conn)
         return None
     else:
         return id_raw[0][0]
@@ -27,12 +25,10 @@ def changenote():
         if i not in request.form:
             return "ERR"
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On change la note
@@ -42,9 +38,8 @@ def changenote():
                 note = EXCLUDED.note,
                 date = NOW()""",
                 (request.form["fic"],userId,request.form["note"]))
-    conn.commit()
+    request.environ["conn"].commit()
     
-    util.bdd.releaseConnexion(conn)
     return "OK"
 
 def minichat_send_msg():
@@ -52,12 +47,10 @@ def minichat_send_msg():
         if i not in request.form:
             return "ERR"
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #Formater le content
@@ -66,9 +59,8 @@ def minichat_send_msg():
     
     #On met dans la base
     cursor.execute("INSERT INTO chat_messages (auteur, date, content) VALUES (%s, NOW(), %s)", (userId, formatedContent,))
-    conn.commit()
+    request.environ["conn"].commit()
     
-    util.bdd.releaseConnexion(conn)
     return "OK"
 
 
@@ -78,12 +70,10 @@ def chapitre_send_comment():
             return "ERR"
     
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #Formater le content
@@ -93,9 +83,8 @@ def chapitre_send_comment():
     #On met dans la base
     cursor.execute("""INSERT INTO comments (auteur, chapitre, deleted, creation, content)
                     VALUES (%s,%s, false, NOW(), %s)""", (userId, request.form["chapitre"], request.form["content"]))
-    conn.commit()
+    request.environ["conn"].commit()
 
-    util.bdd.releaseConnexion(conn)
     return "OK"
 
 
@@ -109,12 +98,10 @@ def ajax_modif_profil():
         if f"site_externe_{i}" not in request.form:
             return "ERR"
         
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     
@@ -156,22 +143,17 @@ def ajax_modif_profil():
         #On enregistre l'image
         resized_image.save(nom)
         
-    
-    
-    conn.commit() 
-    util.bdd.releaseConnexion(conn)
+    request.environ["conn"].commit()
     return "OK"
 
 def ajax_modif_mdp():
     for i in ["token", "ancien_mdp", "nouveau_mdp"]:
         if i not in request.form:
             return "ERR"        
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On compare le mot de passe
@@ -179,7 +161,6 @@ def ajax_modif_mdp():
     val = cursor.fetchall()
     
     if not check_password_hash(val[0][0], request.form["ancien_mdp"]+ param.PASSWORD_SALT):
-        util.bdd.releaseConnexion(conn)
         return "ERRMDP"
     
     #Changer le mdp dans la bdd
@@ -191,7 +172,6 @@ def ajax_modif_mdp():
     cursor.execute("DELETE FROM users_token WHERE id_users = %s", (userId,))
     cursor.execute("DELETE FROM users_shorts_tokens WHERE id_users = %s", (userId,))    
     
-    conn.commit()
-    util.bdd.releaseConnexion(conn)
+    request.environ["conn"].commit()
 
     return "OK"

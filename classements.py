@@ -1,11 +1,6 @@
-from flask import render_template
-import util.bdd
-import util.general
-from flask import abort
 import psycopg2
 import util.classements
 import util.genre
-import accounts.accounts
 
 def classement_tout(page_):
     def x(cursor: psycopg2.extensions.cursor, offset):

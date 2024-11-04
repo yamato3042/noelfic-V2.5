@@ -1,11 +1,12 @@
-from flask import render_template, abort
-import util.bdd
+from flask import render_template, abort, request
 import util.general
 import util.classements
 import util.formateur
 import accounts.accounts
 
 def fic(fic_, chapitre_):
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
     #On commence par obtenir le numéro de la fic
     fic_dic = fic_.split("-")
     
@@ -21,9 +22,6 @@ def fic(fic_, chapitre_):
         abort(404)
     chapitre = int(chapitre_)
 
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
-    session = accounts.accounts.Session(conn)
 
     #On chope la liste des chapitres de la fic
     cursor.execute("SELECT COUNT(*) FROM chapitres WHERE fic = %s", (fic,))
@@ -41,7 +39,6 @@ def fic(fic_, chapitre_):
                     WHERE fics.id = %s AND chapitres.num = %s""", (fic,chapitre,))
     chapitre_raw = cursor.fetchall()
     if len(chapitre_raw) == 0:
-        util.bdd.releaseConnexion(conn)
         abort(404)
     
     #Maintenant on vas vérifier que le titre de la fic dans la barre d'adresse a été slugifié correctement
@@ -115,5 +112,4 @@ def fic(fic_, chapitre_):
 
 
     titre = f"{chapitre_dic['fic_titre']} page {chapitre_dic['chapitre']}"
-    util.bdd.releaseConnexion(conn)
     return render_template("fic.html", titre=titre, customCSS="fic.css", ajout_sidebar=render_template("fic_nav.html", listeChapitres=listChapitres), chapitre=chapitre_dic, commentaires=commentaires, session=session)

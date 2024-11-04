@@ -1,6 +1,5 @@
 #Ce code contient la page et la requête post pour se connecter sur le site
 from flask import render_template, request, redirect, make_response
-import util.bdd
 import accounts.accounts
 from accounts.ajax import getUserIdFromTempToken
 import json
@@ -9,28 +8,24 @@ import util.genre
 import util.general
 import util.formateur
 def edit_fic_page():
-
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
+    session: accounts.accounts.Session = request.environ["session"]
     
     if not session.logged:
         return redirect("/")
         
     genres = util.genre.getGenresDic()
     status = util.general.getDicStatus()
-    
-    util.bdd.releaseConnexion(conn)
+
     return render_template("accounts/edit_fics.html", customCSS="edit_fics.css", session=session, genres=genres, status=status)
 
 def getfics():
     util.ajax_util.checkFormsVal(["token"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     cursor.execute("""SELECT id_fics, titre FROM collaborateur 
@@ -44,8 +39,7 @@ def getfics():
             "titre": i[1]
         }
         ret.append(cur)
-    
-    util.bdd.releaseConnexion(conn)
+
     return json.dumps(ret)
 
 def getcolaborateurs():
@@ -53,12 +47,10 @@ def getcolaborateurs():
         
     fic = int(request.form["fic"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On récupère l'auteur de la fic (on peux pas l'enlever donc faut le préciser)
@@ -86,7 +78,6 @@ def getcolaborateurs():
             cur["type"] = "writer"
         ret.append(cur)
     
-    util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
 
 def collaborateur_delete():
@@ -95,36 +86,30 @@ def collaborateur_delete():
     fic = int(request.form["fic"])
     toremove = int(request.form["toremove"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     if toremove == userId:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On récupère le proprio pour pas pouvoir l'enlever
     cursor.execute("SELECT auteur FROM fics WHERE id = %s", (fic,))
     proprio = cursor.fetchone()[0]
     if toremove == proprio:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #Tout est bon, on enlève de la BDD
     cursor.execute("DELETE FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, toremove,))
-    conn.commit()
+    request.environ["conn"].commit()
     
-    util.bdd.releaseConnexion(conn)
     return "OK"
 
 def collaborateur_add():
@@ -133,39 +118,33 @@ def collaborateur_add():
     fic = int(request.form["fic"])
     username = request.form["user"]
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On regarde si l'user existe
     cursor.execute("SELECT id FROM users WHERE pseudo ILIKE %s", (username,))
     val = cursor.fetchall()
     if len(val) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERR_INVALID_USER"
     username_id = val[0][0]
     #On regarde si il y est pas déjà dedans
     cursor.execute("SELECT FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, username_id,))
     val = cursor.fetchall()
     if len(val) != 0:
-        util.bdd.releaseConnexion(conn)
         return "ERR_ALREADY_USER"
     
     #On l'ajoute
     cursor.execute("INSERT INTO collaborateur VALUES (%s, %s)", (fic,username_id,))
-    conn.commit()
+    request.environ["conn"].commit()
     
-    util.bdd.releaseConnexion(conn)
     return "OK" 
 
 
@@ -174,18 +153,15 @@ def personalisation_get():
         
     fic = int(request.form["fic"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On récupère les valeurs de base
@@ -209,7 +185,6 @@ def personalisation_get():
     cursor.execute("SELECT COALESCE(MAX(num), 0) FROM chapitres WHERE fic = %s", (fic,))
     ret["nbchapitres"] = cursor.fetchone()[0]
     
-    util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
 
 def personalisation_set():
@@ -217,18 +192,15 @@ def personalisation_set():
         
     fic = int(request.form["fic"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     val = json.loads(request.form["val"])
@@ -247,9 +219,8 @@ def personalisation_set():
     for i in val["tags"]:
         cursor.execute("INSERT INTO tags VALUES (%s,%s)", (fic, int(i)))
     
-    conn.commit()
+    request.environ["conn"].commit()
     
-    util.bdd.releaseConnexion(conn)
     return "OK"
 
 
@@ -259,18 +230,15 @@ def chapitre_get():
     fic = int(request.form["fic"])
     chapitre = int(request.form["chapitre"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On récupère les trucs
@@ -282,8 +250,6 @@ def chapitre_get():
         "auteur": val[1],
         "content": util.formateur.formatPourEspaceEcriture(val[2]) #Y'a des trucs qui marchent pas côté quill faut regarder ça
     }
-    
-    util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
 
 def chapitre_save():
@@ -295,18 +261,15 @@ def chapitre_save():
     auteur = int(request.form["auteur"])
     content = util.formateur.formatEntrée(request.form["content"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On change les valeurs
@@ -316,8 +279,7 @@ def chapitre_save():
     cursor.execute("UPDATE fics SET modification = NOW() WHERE id = %s", (fic,))
     cursor.execute("UPDATE chapitres SET modification=NOW() where fic = %s AND num = %s", (fic, chapitre,))
     
-    conn.commit()
-    util.bdd.releaseConnexion(conn)
+    request.environ["conn"].commit()
     return "OK"
 
 def chapitre_create():
@@ -328,18 +290,15 @@ def chapitre_create():
     auteur = int(request.form["auteur"])
     content = util.formateur.formatEntrée(request.form["content"])
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que l'user soit bien collaborateur
     cursor.execute("SELECT * FROM collaborateur WHERE id_fics = %s AND id_users = %s", (fic, userId,))
     if len(cursor.fetchall()) != 1:
-        util.bdd.releaseConnexion(conn)
         return "ERRUSR"
     
     #On crée un nouveau chapitre et on return le num
@@ -347,11 +306,10 @@ def chapitre_create():
                 VALUES (%s, %s, (SELECT COALESCE(MAX(num), 0)+1 from chapitres WHERE fic = %s), %s, %s, NOW(), NOW(), 0)
                 RETURNING num""", (fic, titre, fic, auteur, content))
     num = cursor.fetchone()[0]
-    conn.commit()
+    request.environ["conn"].commit()
     
     ret = {"num": num}
     
-    util.bdd.releaseConnexion(conn)
     return json.dumps(ret)
 
 
@@ -363,18 +321,15 @@ def fic_create():
     if(titre == ""): 
         return "ERR"
     
-    conn = util.bdd.getConnexion()
-    cursor = conn.cursor()
+    cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
     #On récup le token
     userId = getUserIdFromTempToken(cursor, request.form["token"]);
     if userId == None:
-        util.bdd.releaseConnexion(conn)
         return "ERR"
     
     #On vérifie que le titre ne soit pas déjà pris
     cursor.execute("SELECT id from fics WHERE titre ILIKE %s", (titre,))
     if len(cursor.fetchall()) > 0:
-        util.bdd.releaseConnexion(conn)
         return "ERR_ALREADY_EXIST"
     
     #On crée la fic
@@ -386,6 +341,5 @@ def fic_create():
     
     
     
-    conn.commit()
-    util.bdd.releaseConnexion(conn)
+    request.environ["conn"].commit()
     return str(fic_id)

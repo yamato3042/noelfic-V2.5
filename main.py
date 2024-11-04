@@ -1,12 +1,15 @@
-from flask import Flask, render_template, redirect, url_for 
+from flask import Flask, render_template, redirect, url_for, request
 app = Flask(__name__)
 
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
 
 
 import psycopg2
-import util.bdd
 import accounts.accounts
+
+import middleware
+app.wsgi_app = middleware.Middleware(app.wsgi_app)
+
 
 import index
 import classements
@@ -45,9 +48,7 @@ app.add_url_rule("/minichat", view_func=minichat.page_minichat)
 
 @app.route("/charte")
 def page_charte():
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
-    util.bdd.releaseConnexion(conn)
+    session = request.environ["session"]
     return render_template("charte.html", customCSS="charte.css", titre="Charte", session=session)
 
 app.add_url_rule("/comptes/inscription", view_func=accounts.inscription.page_inscription, methods=['GET', 'POST'])
@@ -80,9 +81,7 @@ app.add_url_rule("/comptes/valider_compte", view_func=accounts.inscription.inscr
 
 @app.errorhandler(404)
 def error_404(e):
-    conn = util.bdd.getConnexion()
-    session = accounts.accounts.Session(conn)
-    util.bdd.releaseConnexion(conn)
+    session = request.environ["session"]
     return render_template("404.html", titre="404", session=session)
 
 if __name__ == "__main__": 
