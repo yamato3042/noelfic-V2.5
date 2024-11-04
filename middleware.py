@@ -27,7 +27,6 @@ class Middleware:
         response = self.app(environ, start_response)
         
         # Code exécuté après le traitement de la requête
-        print("libère base")
         util.bdd.releaseConnexion(conn)
 
         return response
