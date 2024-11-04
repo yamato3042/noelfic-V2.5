@@ -28,10 +28,15 @@ class Middleware:
         response = self.app(environ, start_response)
         
         if RECORD_STAT:
+            ip = ""
+            if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+                ip = request.environ['REMOTE_ADDR']
+            else:
+                ip = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
             #On enregistre les stats
             conn.rollback()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO stats_visits VALUES (NOW(), %s, %s, %s, %s)", (request.path, request.user_agent.string, request.remote_addr, request.environ["session"].logged))
+            cursor.execute("INSERT INTO stats_visits VALUES (NOW(), %s, %s, %s, %s)", (request.path, request.user_agent.string, ip, request.environ["session"].logged))
             conn.commit()
         
         # Code exécuté après le traitement de la requête
