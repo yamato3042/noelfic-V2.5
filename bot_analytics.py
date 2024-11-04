@@ -32,45 +32,55 @@ def work_val(val : list) -> dict:
             ip : str = i[3]
             logged : bool = i[4]
             
+            #Si l'agent est un bot on s'en fout
+            isBot = False
+            lowered_agent = user_agent.lower()
+            for i in ["bot", "bytespider"]:
+                if i in lowered_agent:
+                    isBot = True
+            
+            
             if ret["date"] == None:
                 #On prend le premier enregistrement comme date de réference
                 ret["date"] = date.strftime("%d-%m-%Y")
-                
-            #On regarde le path
-            #Si c'est une fic on comptabilise dans un autre tableau
-            if url.startswith("/fic/"):
-                #Il s'agit d'une fic
-                #On récupère le numéro de la fic et le nom du chapitre
-                fic_data = url.split("/")
-                chapitre = int(fic_data[-1])
-                fic = fic_data[-2]
+            
+            if not isBot:
+                #On regarde le path
+                #Si c'est une fic on comptabilise dans un autre tableau
+                if url.startswith("/fic/"):
+                    #Il s'agit d'une fic
+                    #On récupère le numéro de la fic et le nom du chapitre
+                    fic_data = url.split("/")
+                    chapitre = int(fic_data[-1])
+                    fic = fic_data[-2]
 
-                if fic not in fics:
-                    fics[fic] = {"sum" : set()}
-                #On ajoute le chapitre
-                fics[fic]["sum"].add(ip)
-                
-                if chapitre not in fics[fic]:
-                    fics[fic][chapitre] = set()
-                fics[fic][chapitre].add(ip)
-                
-            else:
-                if url not in ret["page"]:
-                    ret["page"][url] = 1
+                    if fic not in fics:
+                        fics[fic] = {"sum" : set()}
+                    #On ajoute le chapitre
+                    fics[fic]["sum"].add(ip)
+                    
+                    if chapitre not in fics[fic]:
+                        fics[fic][chapitre] = set()
+                    fics[fic][chapitre].add(ip)
+                    
                 else:
-                    ret["page"][url] += 1
-                
-            #On regarde l'user agent
-            if user_agent not in ret["user_agents"]:
-                ret["user_agents"][user_agent] = 1
-            else: 
-                ret["user_agents"][user_agent] += 1
-                
-            #On regarde le logged
-            if logged != None:
-                ret["logged"][logged] += 1
-        except:
-            print("Erreur bot analytics")
+                    if url not in ret["page"]:
+                        ret["page"][url] = 1
+                    else:
+                        ret["page"][url] += 1
+                    
+                #On regarde l'user agent
+                if user_agent not in ret["user_agents"]:
+                    ret["user_agents"][user_agent] = 1
+                else: 
+                    ret["user_agents"][user_agent] += 1
+                    
+                #On regarde le logged
+                if logged != None:
+                    ret["logged"][logged] += 1
+        except Exception as e:
+            print("Erreur bot analytics, work val")
+            print(e)
             
             
     for i in fics:
@@ -97,6 +107,24 @@ def save_val(val : dict):
 def clean_db(cursor : psycopg2.extensions.cursor):
     cursor.execute("DELETE FROM stats_visits")
     
+def update_vues(fics: dict, cursor : psycopg2.extensions.cursor):
+    for i in fics:
+        try:
+            #On récupère l'id de la fic
+            ficId = int(i.split("-")[0])
+            #On met à jour les vues de la fic
+            cursor.execute("UPDATE fics SET vues = vues + %s WHERE id = %s", (fics[i]["sum"], ficId))
+            #On s'occupe des chapitres
+            for a in fics[i]:
+                if a != "sum":
+                    cursor.execute("UPDATE chapitres SET vues = vues + %s WHERE fic = %s AND num = %s", (fics[i][a], ficId, a,))
+        except Exception as e:
+            print("Erreur bot analytics, updates vues")
+            print(e)
+        
+        
+        
+        
 debut = time.perf_counter()
 date_début = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 f = open("bot_analytics.log", "a")
@@ -113,6 +141,7 @@ cursor = conn.cursor()
 #On récupère les valeurs
 val = get_val(cursor)
 ret = work_val(val)
+update_vues(ret["fics"], cursor)
 save_val(ret)
 
 clean_db(cursor)
