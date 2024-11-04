@@ -76,7 +76,7 @@ def page_connexion():
                 if not isinstance(err, str):
                     #Alors tout est bon
                     resp = make_response(redirect("/?msg=2"))
-                    resp.set_cookie("userToken", err[1], httponly=True)
+                    resp.set_cookie("userToken", err[1], httponly=True, max_age=12960000) #5 Mois
                     return resp
         else:
             err = "Merci de remplir tous les champs"
