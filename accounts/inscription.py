@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA, ALLOW_AUTH, PASSWORD_SALT
+from param import ALLOW_AUTH, PASSWORD_SALT
 import send_mail
 
 def createUser(pseudo: str, email : str, password : str):
