@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash
 import hashlib
 import secrets
 import util.captcha
-from param import CHECK_CHAPTCHA, ALLOW_AUTH, PASSWORD_SALT
+from param import PASSWORD_SALT, ALLOW_AUTH
 
 def connexionUser(pseudo, password):
     cursor: psycopg2.extensions.cursor = request.environ["conn"].cursor()
@@ -44,6 +44,7 @@ def page_connexion():
         abort(404)
     err = None
     if request.method == "POST":
+        print(request.form)
         if "pseudo" in request.form and "password" in request.form:
             pseudo = request.form.get("pseudo")
             password = request.form.get("password")
@@ -54,19 +55,10 @@ def page_connexion():
             if password == "":
                 ok = False
                 err = "Mot de passe invalide"
-            if CHECK_CHAPTCHA:
-                #Le captcha
-                if "g-recaptcha-response" not in request.form:
-                    ok = False
-                    err = "Captcha invalide"
-                elif request.form["g-recaptcha-response"] == "":
-                    ok = False
-                    err = "Captcha invalide"
-                else:
-                    #On vérifie la valeur du captcha
-                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
-                        ok = False
-                        err = "Captcha invalide"
+            if not util.captcha.checkCaptcha():
+                ok = False
+                err = "Captcha invalide"
+                        
                     
             if ok:
                 err = connexionUser(pseudo, password)
@@ -79,6 +71,5 @@ def page_connexion():
         else:
             err = "Merci de remplir tous les champs"
         #print(request.form)
-    
     captcha = util.captcha.getCaptcha()
     return render_template("accounts/connexion.html", err=err, customCSS="accounts.css", session=session, captcha=captcha)

@@ -60,7 +60,7 @@ def page_inscription():
             pseudo = request.form.get("pseudo")
             email = request.form.get("email")
             password = request.form.get("password")
-            captcha_ret = request.form.get("g-recaptcha-response")
+
             
             ok = True
             if pseudo == "":
@@ -72,21 +72,10 @@ def page_inscription():
             if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
                 ok = False
                 err = "Email invalide"
-            if CHECK_CHAPTCHA:
-                #Le captcha
-                if "g-recaptcha-response" not in request.form:
-                    ok = False
-                    err = "Captcha invalide"
-                elif request.form["g-recaptcha-response"] == "":
-                    ok = False
-                    err = "Captcha invalide"
-                else:
-                    #On vérifie la valeur du captcha
-                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
-                        ok = False
-                        err = "Captcha invalide"
+            if not util.captcha.checkCaptcha():
+                ok = False
+                err = "Captcha invalide"
                 
-            
             if ok:
                 #On crée le compte
                 err = createUser(pseudo, email, password)
@@ -95,7 +84,6 @@ def page_inscription():
                     return redirect("/?msg=1")
         else:
             err = "Merci de remplir tous les champs"
-        #print(request.form)
     
     
     captcha = util.captcha.getCaptcha()

@@ -1,28 +1,31 @@
 {% extends "layout.html" %}
-    {% block content %}
-    {# le formulaire #}
-    <form action="" method="post">
-      <h1>Inscription</h1>
-      <table>
-        <tr>
-          <td><label for="pseudo">Pseudo : </label></td>
-          <td><input type="text" name="pseudo" id="pseudo" required /></td>
-        </tr>
+{% block content %}
+{# le formulaire #}
+<form action="" method="post">
+  <h1>Inscription</h1>
+  <table>
+    <tr>
+      <td><label for="pseudo">Pseudo : </label></td>
+      <td><input type="text" name="pseudo" id="pseudo" required /></td>
+    </tr>
 
-        <tr>
-          <td><label for="email">Email : </label></td>
-          <td><input type="email" name="email" id="email" required /></td>
-        </tr>
+    <tr>
+      <td><label for="email">Email : </label></td>
+      <td><input type="email" name="email" id="email" required /></td>
+    </tr>
 
-        <tr>
-          <td><label for="password">Mot de passe : </label></td>
-          <td><input type="password" name="password" id="password" required /></td>
-        </tr>
-      </table>
-      {{captcha|safe}}
-      <input class="button" type="submit" value="Inscription" />
-      {% if err %}
-      <p style="color: red;"">{{err}}</p>
+    <tr>
+      <td><label for="password">Mot de passe : </label></td>
+      <td><input type="password" name="password" id="password" required /></td>
+    </tr>
+  </table>
+
+  {#Le captcha#}
+  {{captcha|safe}}
+
+  <input class="button" type="submit" value="Inscription" />
+  {% if err %}
+  <p style="color: red;"">{{err}}</p>
       {% endif%}
     </form>
       

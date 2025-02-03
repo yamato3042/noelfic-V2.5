@@ -1,20 +1,29 @@
-#Ce code permet de générer et de vérifier un captcha avec hcaptcha
-from param import HCAPTCHA_SITE_KEY, HCAPTCHA_SECRET
+import param
+from flask import request
 import requests
-
-def getCaptcha() -> str :
-    return f"""<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-                <div class="h-captcha" data-sitekey="{HCAPTCHA_SITE_KEY}"></div>
+def getCaptcha() -> str:
+    ret = f"""
+    <div class="cf-turnstile" data-sitekey="{param.CAPTCHA_SITE_KEY}"></div>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     """
+    print(ret)
+    return ret
     
-    
-def verifyCaptcha(response_token : str) -> bool:
-    
-    url = 'https://hcaptcha.com/siteverify'
-    data = {
-        'secret': HCAPTCHA_SECRET,
-        'response': response_token
-    }
-    response = requests.post(url, data=data)
-    result = response.json()
-    return result.get('success', False)
+def checkCaptcha() -> bool:
+    if param.CAPTCHA_CHECK:
+        if "cf-turnstile-response" in request.form:
+            response = requests.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={
+                "secret": param.CAPTCHA_SECRET_KEY,
+                "response": request.form["cf-turnstile-response"],
+            })
+            result = response.json()
+            if not result.get("success"):
+                return False
+            else:
+                return True
+        else:
+            return False
+    else:
+        return True

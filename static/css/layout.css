@@ -239,3 +239,7 @@ b {
     color: rgba(0, 0, 0, 0.87);
     text-align: center;
 }
+
+.cf-turnstile {
+    margin: 0 auto;
+}

@@ -31,7 +31,10 @@
       <td><input type="email" name="email" id="email" required /></td>
     </tr>
   </table>
+
+  {#Le captcha#}
   {{captcha|safe}}
+
   {% endif %}
 
   <input class="button" type="submit" value="{{submit}}" />

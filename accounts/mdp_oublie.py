@@ -17,18 +17,9 @@ def resetpass():
         if "email" in request.form:
             email = request.form.get("email")
             ok = True
-            if param.CHECK_CHAPTCHA:
-                if "g-recaptcha-response" not in request.form:
-                    ok = False
-                    err = "Captcha invalide"
-                elif request.form["g-recaptcha-response"] == "":
-                    ok = False
-                    err = "Captcha invalide"
-                else:
-                    #On vérifie la valeur du captcha
-                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
-                        ok = False
-                        err = "Captcha invalide"
+            if not util.captcha.checkCaptcha():
+                ok = False
+                err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
                 cursor.execute("SELECT id FROM users WHERE mail LIKE %s AND from_v1 = false", (email,))
@@ -68,18 +59,9 @@ def migrepass():
         if "email" in request.form:
             email = request.form.get("email")
             ok = True
-            if param.CHECK_CHAPTCHA:
-                if "g-recaptcha-response" not in request.form:
-                    ok = False
-                    err = "Captcha invalide"
-                elif request.form["g-recaptcha-response"] == "":
-                    ok = False
-                    err = "Captcha invalide"
-                else:
-                    #On vérifie la valeur du captcha
-                    if not util.captcha.verifyCaptcha(request.form["g-recaptcha-response"]):
-                        ok = False
-                        err = "Captcha invalide"
+            if not util.captcha.checkCaptcha():
+                ok = False
+                err = "Captcha invalide"
             if ok:
                 #On vérifie que l'email soit attribué
                 cursor.execute("SELECT id FROM users WHERE mail LIKE %s AND from_v1 = true", (email,))
