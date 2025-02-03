@@ -6,7 +6,10 @@ import hashlib
 def getFicLink(id : int, nom : str, chapitre : int = 1, naked=False) -> str: #En gros si naked on fournit juste la valeur au milieu
     nom_conv = nom.lower()
     nom_conv = nom_conv.strip()
-    nom_conv = nom_conv.replace(" ", "-")
+    
+    for i in [" ", "/", "?", "#"]:
+        nom_conv = nom_conv.replace(i, "-")
+        
     if not naked:
         return f"/fic/{id}-{nom_conv}/{chapitre}"
     elif naked:
